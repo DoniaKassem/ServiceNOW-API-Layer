@@ -1,0 +1,751 @@
+{
+	"info": {
+		"_postman_id": "7f65845a-6703-4554-84ba-806de15260b8",
+		"name": "ServiceNow Post Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22621540"
+	},
+	"item": [
+		{
+			"name": "Post Requests",
+			"item": [
+				{
+					"name": "Contracts",
+					"item": [
+						{
+							"name": "Create Vendor",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"\",\r\n  \"status\": \"\",\r\n  \"website\": \"\",\r\n  \"notes\": \"\",\r\n  \"vendor_manager\": \"Ahmed Donia\",\r\n  \"vendor_type\": \"\",\r\n  \"street\": \"\",\r\n  \"city\": \"\",\r\n  \"state\": \"\",\r\n  \"country\": \"\",\r\n  \"vendor\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/core_company",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"core_company"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Contract",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"contract_model\": \"HR Software\",\r\n  \"vendor\": \"\",\r\n  \"short_description\": \"UKG Pro Employee Pay - 50/50 Compensation\",\r\n  \"contract_administrator\": \"\",\r\n  \"approver\": \"\",\r\n  \"starts\": \"2023-07-01 00:00:00\",\r\n  \"ends\": \"2026-07-22 23:59:59\",\r\n  \"description\": \"UKG Pro HR & payroll suite agreement, covering payroll and compensation.\",\r\n  \"renewable\": \"true\",\r\n  \"u_payment_method\": \"Invoice\",\r\n  \"invoice_payment_terms\": \"Net 30\",\r\n  \"payment_schedule\": \"Annual\",\r\n  \"payment_amount\": \"58314.30\",\r\n  \"supplier\": \"\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/ast_contract",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"ast_contract"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Expense Line",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"amount\":\"\",\"short_description\":\"\",\"ci\":\"\",\"contract\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/fm_expense_line",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"fm_expense_line"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Offering",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Einstein AI\",\n  \"vendor\": \"<VENDOR_SYS_ID>\",\n  \"description\": \"Predictive analytics suite from Salesforce\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/service_offering",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"service_offering"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Offering Multiple",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Einstein AI\",\n  \"vendor\": \"<VENDOR_SYS_ID>\",\n  \"description\": \"Predictive analytics suite from Salesforce\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/service_offering",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"service_offering"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Asset",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Sales Cloud License\",\n  \"model\": \"<MODEL_SYS_ID>\",\n  \"quantity\": 250,\n  \"cost\": 212500,\n  \"install_status\": \"1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/alm_asset",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"alm_asset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Asset Covered",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"contract\": \"<CONTRACT_SYS_ID>\",\n  \"asset\": \"<ASSET_SYS_ID>\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/clm_m2m_contract_asset",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"clm_m2m_contract_asset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Configuration Item",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Salesforce Sandbox Environment\",\n  \"short_description\": \"Test environment for Salesforce applications\",\n  \"manufacturer\": \"Salesforce\",\n  \"model_id\": \"<MODEL_SYS_ID>\",\n  \"install_status\": \"1\",\n  \"asset_tag\": \"SF-SBX-001\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/cmdb_ci",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"cmdb_ci"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create CI Covered",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"contract\": \"<CONTRACT_SYS_ID>\",\n  \"ci_item\": \"<CMDB_CI_SYS_ID>\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/ast_contract_instance",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"ast_contract_instance"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Rate Card Entry",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"contract\": \"<CONTRACT_SYS_ID>\",\n  \"name\": \"Sales Cloud License\",\n  \"unit_price\": \"85\",\n  \"unit_of_measure\": \"user/month\",\n  \"quantity\": \"250\",\n  \"currency\": \"USD\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/fm_contract_rate_card",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"fm_contract_rate_card"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create CMDB Model",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Sales Cloud License Model\",\n  \"manufacturer\": \"Salesforce\",\n  \"short_description\": \"Subscription model for Sales Cloud licensing\",\n  \"cmdb_model_category\": \"<MODEL_CATEGORY_SYS_ID>\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/cmdb_model",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"cmdb_model"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create CMDB Model Category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "{{x-sn-apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Software Subscription\",\n  \"description\": \"Subscription-based software licensing category\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/cmdb_model_category",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"cmdb_model_category"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Purchase Orders",
+					"item": [
+						{
+							"name": "Create Supplier",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"name\":\"\",\"legal_name\":\"\",\"u_vendor\":\"\",\"web_site\":\"\",\"street\":\"\",\"city\":\"\",\"state\":\"\",\"country\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_fin_supplier",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_fin_supplier"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Purchase Order",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"display_name\":\"\",\"status\":\"\",\"supplier\":\"\",\"total_amount\":\"\",\"purchase_order_type\":\"\",\"created\":\"\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_purchase_order"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Purchase Order Line",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"purchase_order\": \"abf29d2d87d5ba10dbd2fc89cebb35df\",\r\n  \"product_name\": \"123\",\r\n  \"short_description\": \"123\",\r\n  \"purchased_quantity\": \"1\",\r\n  \"unit_price\": \"USD;600.00\",\r\n  \"total_line_amount\": \"USD;600.00\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order_line",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_purchase_order_line"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create New Currency Instance - Unit Price",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"amount\":\"1988\",\"currency\":\"USD\",\"field\":\"unit_price\"}"
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/fx_currency2_instance",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"fx_currency2_instance"
+									]
+								},
+								"description": "Creates a new fx_currency2_instance record in ServiceNow. Use the returned sys_id to reference this currency instance in unit_price or total_line_amount fields on related records.\n\nEndpoint\n- Method: POST\n- URL: https://illumindev.service-now.com/api/now/table/fx_currency2_instance\n\nHeaders\n- Accept: application/json\n- Content-Type: application/json\n\nAuth\n- This instance typically requires authentication. Ensure valid credentials or an API key are configured in your active environment (e.g., via variables {{username}} / {{password}} or instance-specific auth).\n\nPath/Query Params\n- None.\n\nRequest Body (raw JSON)\n{\n  \"fx_currency\": \"{{currencyCode}}\",   // ISO 4217 currency code (e.g., USD, EUR)\n  \"value\": \"{{amount}}\"                // Numeric amount as string; decimals allowed\n}\n\nVariables\n- {{currencyCode}}: ISO 4217 currency code for the instance you want to create.\n- {{amount}}: The monetary value for this instance.\n\nSample Use\n- Set currencyCode=USD and amount=1234.56 in your environment, then send the request.\n\nExpected Response\n- 201 Created with a body containing the new record, including the field sys_id.\n\nPost-creation\n- Use the returned sys_id in related records (e.g., Purchase Order Line) for unit_price or total_line_amount.\n\nCommon Errors\n- 400 Bad Request: Missing or invalid fields.\n- 401/403 Unauthorized: Verify authentication or permissions.\n\nNotes\n- This request does not currently include pre-request or test scripts. Consider adding tests to assert status code === 201 and that a sys_id is present in the response."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Suppliers Product",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"product_type\":\"\",\"product_category\":\"\",\"supplier\":\"\",\"name\":\"\",\"description\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_supplier_product",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_supplier_product"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Send Attachments",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "x-sn-apikey",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							},
+							{
+								"key": "x-sn-apikey",
+								"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "table_name",
+									"value": "ast_contract",
+									"type": "text"
+								},
+								{
+									"key": "table_sys_id",
+									"value": "3657631387fc3e50dbd2fc89cebb3542",
+									"type": "text"
+								},
+								{
+									"key": "Upload a file",
+									"type": "file",
+									"src": "postman-cloud:///1f0b5c9f-93aa-4730-a361-45aa01f3cdb4"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://illumindev.service-now.com/api/now/attachment/upload\n",
+							"protocol": "https",
+							"host": [
+								"illumindev",
+								"service-now",
+								"com"
+							],
+							"path": [
+								"api",
+								"now",
+								"attachment",
+								"upload\n"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

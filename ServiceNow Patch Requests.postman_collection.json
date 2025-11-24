@@ -1,0 +1,508 @@
+{
+	"info": {
+		"_postman_id": "b1dfe36c-62d4-4721-b059-b0b2b881da2c",
+		"name": "ServiceNow Patch Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22621540"
+	},
+	"item": [
+		{
+			"name": "Patch Requests",
+			"item": [
+				{
+					"name": "Contracts",
+					"item": [
+						{
+							"name": "Update Vendor",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"\",\r\n  \"status\": \"\",\r\n  \"website\": \"\",\r\n  \"notes\": \"\",\r\n  \"vendor_manager\": \"Ahmed Donia\",\r\n  \"vendor_type\": \"\",\r\n  \"street\": \"\",\r\n  \"city\": \"\",\r\n  \"state\": \"\",\r\n  \"country\": \"\",\r\n  \"vendor\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/core_company/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"core_company",
+										"{sys_id}"
+									]
+								},
+								"description": "Endpoint: PATCH /api/now/table/core_company/{sys_id}\nBase URL: https://illumindev.service-now.com\nService: ServiceNow Table API (core_company)\n\nPurpose\n- Update an existing Vendor/Company record (core_company) by sys_id. Use this to change vendor attributes such as manager, type, address, and status. Only the fields provided in the body are updated; omitted fields remain unchanged.\n\nAuthentication\n- API Key in header.\n- Requirements: A valid x-sn-apikey associated with a user that has permissions to update core_company records.\n- Provide via Postman environment \"x-sn-apikey\".\n\nPath Parameters\n- sys_id (string, required): Unique identifier of the core_company record to update.\n  Example: 7b9c2c1f1b2f3450a3b5cdef67abc123\n\nRequired Headers\n- x-sn-apikey: <api-key>\n- Content-Type: application/json\n\nRequest Body\n- Content type: application/json (raw)\n- Schema (fields are optional unless noted; empty strings will clear values when allowed by the table’s dictionary rules):\n  {\n    \"name\": string,\n    \"status\": string,\n    \"website\": string,\n    \"notes\": string,\n    \"vendor_manager\": string,   // Person responsible for the vendor (e.g., name or sys_id, depending on implementation)\n    \"vendor_type\": string,      // Classification such as manufacturer, distributor, etc.\n    \"street\": string,\n    \"city\": string,\n    \"state\": string,\n    \"country\": string,\n    \"vendor\": boolean           // true if this company is a vendor\n  }\n- Example body (matches current tab):\n  {\n    \"name\": \"\",\n    \"status\": \"\",\n    \"website\": \"\",\n    \"notes\": \"\",\n    \"vendor_manager\": \"Ahmed Donia\",\n    \"vendor_type\": \"\",\n    \"street\": \"\",\n    \"city\": \"\",\n    \"state\": \"\",\n    \"country\": \"\",\n    \"vendor\": \"true\"\n  }\n  Notes:\n  - If the instance expects boolean for vendor, use true/false (without quotes). The example above reflects current tab content; adjust as needed.\n  - Supplying empty strings may clear fields or be rejected based on field constraints.\n\nBehavior and Response\n- On success: 200 OK with the updated record in the result array structure typical of ServiceNow Table API, e.g.:\n  {\n    \"result\": {\n      \"sys_id\": \"...\",\n      \"name\": \"...\",\n      \"status\": \"...\",\n      // other fields\n    }\n  }\n- If no changes were applied (same values), ServiceNow still returns 200 with the current record.\n\nCommon Errors\n- 400 Bad Request: Invalid field names, invalid types (e.g., vendor not boolean), read-only field updates, or empty-string not allowed for a field.\n- 401 Unauthorized / 403 Forbidden: Missing/invalid x-sn-apikey or insufficient permissions to update core_company.\n- 404 Not Found: sys_id does not exist or you lack rights to view the record.\n- 415 Unsupported Media Type: Content-Type not set to application/json.\n\nUsage Tips\n- Verify the sys_id first with a GET before PATCHing.\n- Send only the fields you intend to modify.\n- Use environment variables for sensitive values like x-sn-apikey and for the path variable if desired.\n"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Contracts",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"cost_adjustment_percentage\": \"0\",\r\n  \"total_cost\": \"45008\",\r\n  \"cost_adjustment\": \"0\",\r\n  \"tax_rate\": \"0\",\r\n  \"u_amortized\": \"false\",\r\n  \"applicable_taxes\": \"exempt\",\r\n  \"number\": \"CNTR0010024\",\r\n  \"tax_cost\": \"0\",\r\n  \"sub_total_cost\": \"0\",\r\n  \"supplier\": \"57255b0d87fc3650dbd2fc89cebb35a8\",\r\n  \"sys_domain\": \"global\",\r\n  \"state\": \"draft\",\r\n  \"starts\": \"2020-01-01\",\r\n  \"contract_composite\": \"US Colocation\\u200bCNTR0010024\",\r\n  \"tax_exempt\": \"true\",\r\n  \"yearly_cost\": \"540096\",\r\n  \"active\": \"true\",\r\n  \"commitment\": \"0\",\r\n  \"payment_amount\": \"45008\",\r\n  \"sys_domain_path\": \"/\",\r\n  \"payment_schedule\": \"Monthly\",\r\n  \"cost_center\": \"51e69205871646500790840acebb35da\",\r\n  \"expiration\": \"dda2e38ec3103000c111113e5bba8fab\",\r\n  \"invoice_payment_terms\": \"net_30\",\r\n  \"contract_administrator\": \"bcc156248767ea10dbd2fc89cebb3540\",\r\n  \"short_description\": \"US Colocation\",\r\n  \"sys_class_name\": \"ast_contract\",\r\n  \"vendor\": \"5df5ee1687359a10dbd2fc89cebb3510\",\r\n  \"ends\": \"2026-03-31\",\r\n  \"contract_model\": \"8881e836c3102000b959fd251eba8f29\",\r\n  \"approver\": \"bcc156248767ea10dbd2fc89cebb3540\",\r\n  \"monthly_cost\": \"45008\",\r\n  \"vendor_contract\": \"APTUM0001\",\r\n  \"substate\": \"awaiting_review\",\r\n  \"process_non_contractual_slas\": \"true\",\r\n  \"u_hst_gst\": \"false\",\r\n  \"sales_tax\": \"false\",\r\n  \"u_single_source\": \"false\",\r\n  \"u_has_alternatives\": \"false\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "PATCH https://illumindev.service-now.com/api/now/table/ast_contracts/{sys_id}",
+									"protocol": "PATCH https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"ast_contracts",
+										"{sys_id}"
+									]
+								},
+								"description": "Overview\nThis request updates a ServiceNow Contract (ast_contract) record by sys_id. It performs a partial update (PATCH) on the ast_contracts table.\n\nMethod & URL\nPATCH https://illumindev.service-now.com/api/now/table/ast_contracts/{sys_id}\n\nPath Parameters\n- sys_id (string, required): The unique sys_id of the contract record to update.\n\nHeaders\n- x-sn-apikey (string, required): API key for authenticating to the ServiceNow instance.\n- Content-Type: application/json (implied by raw JSON body).\n\nRequest Body\nSend a JSON object with the fields you want to update. Example fields used in this request:\n- number (string): Contract number identifier.\n- short_description (string): Human-readable contract summary.\n- state (string): Contract state (e.g., draft, active).\n- starts, ends (date): Contract start and end dates (YYYY-MM-DD).\n- vendor (reference): Vendor sys_id.\n- supplier (reference): Supplier sys_id.\n- payment_schedule (string): e.g., Monthly.\n- payment_amount, monthly_cost, yearly_cost, total_cost (number/string): Cost-related fields.\n- tax_exempt, sales_tax, u_hst_gst (boolean/string): Tax-related flags.\n- additional fields...\nNote: Field availability and types depend on your ServiceNow schema and plugins.\n\nBehavior\n- Only the fields provided in the body will be updated (partial update).\n- Fields omitted from the payload remain unchanged.\n\nSuccess Response\n- 200 OK with the updated record in the response body (ServiceNow standard response format).\n\nError Responses\n- 400 Bad Request for invalid field values.\n- 401/403 Authentication/Authorization errors if x-sn-apikey is missing or invalid.\n- 404 Not Found if the specified sys_id does not match an existing record.\n\nUsage Notes\n- Replace {sys_id} in the URL with the target contract's sys_id or parameterize it with an environment/collection variable (e.g., {{MY_SYS_ID}}).\n- Ensure the caller has permissions to update ast_contract records.\n- Validate that referenced sys_id values (vendor, supplier, cost_center, etc.) exist.\n\nRelated\n- Collection: ServiceNow\n- Folder: Contracts / relevant folder\n- Similar requests in workspace: Create/Update Vendor, Supplier, Expense Line, Purchase Order Line."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Expense Line",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"amount\":\"\",\"short_description\":\"\",\"ci\":\"\",\"contract\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/fm_expense_line/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"fm_expense_line",
+										"{sys_id}"
+									]
+								},
+								"description": "Overview\nUpdates an existing ServiceNow Expense Line (fm_expense_line) record by sys_id.\n\nEndpoint\nPATCH https://illumindev.service-now.com/api/now/table/fm_expense_line/{sys_id}\n\nAuthentication\nThis request uses an API key header x-sn-apikey. Ensure the active environment 'x-sn-apikey' provides the correct value. No changes required to existing header.\n\nPath parameters\n- sys_id (string, required): Unique identifier of the expense line record to update.\n\nHeaders\n- x-sn-apikey (required): API key for ServiceNow instance. Already present in the request.\n- Content-Type: application/json (Postman sets this automatically for raw JSON bodies if not specified.)\n\nRequest body (application/json)\nSend only the fields you want to update. Fields with empty strings may clear the existing value depending on instance settings.\nSchema:\n{\n  \"amount\": number|string | nullable — Monetary amount for the expense line. Empty string clears the value if allowed by instance rules.\n  \"short_description\": string | nullable — Brief description of the expense line.\n  \"ci\": string | nullable — Reference to a Configuration Item (sys_id or display value depending on instance configuration).\n  \"contract\": string | nullable — Reference to a Contract record (sys_id or display value depending on instance configuration).\n}\n\nExample\ncurl -X PATCH 'https://illumindev.service-now.com/api/now/table/fm_expense_line/{{MY_SYS_ID}}' \\\n  -H 'x-sn-apikey: {{x-sn-apikey}}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"amount\": 125.50, \"short_description\": \"Hotel stay\", \"ci\": \"a1b2c3d4e5f6g7h8i9j0\", \"contract\": \"7f6e1c2b3a4d5e6f7g8h9i0j\"}'\n\nRequest body example\n{\n  \"amount\": 125.5,\n  \"short_description\": \"Hotel stay\",\n  \"ci\": \"<ci_sys_id>\",\n  \"contract\": \"<contract_sys_id>\"\n}\n\nExpected responses\n- 200: Record updated successfully. Response body includes the updated fm_expense_line record under result.\n- 400: Bad request. Validate field names and types.\n- 401: Unauthorized. Check x-sn-apikey value or environment selection.\n- 404: Record not found for the provided sys_id.\n\nTesting tips\nUse the Tests tab to assert status is 200 and validate key fields like amount and short_description in pm.response.json().\n\nChangelog\nInitial documentation added."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Vendor Manager",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"vendor_manager\": \"bcc156248767ea10dbd2fc89cebb3540\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/core_company/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"core_company",
+										"{sys_id}"
+									]
+								},
+								"description": "Purpose\nUpdate the vendor manager on a ServiceNow core_company record.\n\nEndpoint\nPATCH https://illumindev.service-now.com/api/now/table/core_company/{sys_id}\n\nPath parameters\n- sys_id (string, required): The unique sys_id of the core_company record to update.\n\nHeaders\n- x-sn-apikey (string, required): API key for the instance. Provided by the active environment.\n- Content-Type: application/json\n- Accept: application/json\n\nRequest body (application/json)\n- vendor_manager (string, required): sys_id of the user who will be set as the vendor manager.\n\nExample body\n{\n  \"vendor_manager\": \"bcc156248767ea10dbd2fc89cebb3540\"\n}\n\nNotes\n- Ensure {sys_id} corresponds to an existing core_company record; otherwise the API returns 404.\n- The vendor_manager value must reference a valid sys_user record with appropriate ACLs.\n\nSuccess response\n- 200 OK: Returns the updated core_company record in the result payload.\n\nError responses\n- 400 Bad Request: Invalid or missing fields.\n- 401/403 Unauthorized/Forbidden: Invalid API key or insufficient permissions.\n- 404 Not Found: No Record found or ACL restrictions for the provided sys_id.\n\nTroubleshooting\n- If you get 404, verify the path sys_id exists and that your x-sn-apikey has read/update rights to core_company.\n- To test quickly, first GET the record by sys_id, then retry this PATCH with the same sys_id."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Contracts Copy",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"contract_model\":\"\",\"vendor\":\"\",\"short_description\":\"\",\"contract_administrator\":\"\",\"approver\":\"\",\"starts\":\"\",\"ends\":\"\",\"description\":\"\",\"renewable\":\"\",\"u_payment_method\":\"\",\"invoice_payment_terms\":\"\",\"payment_schedule\":\"\",\"payment_amount\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/core_company/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"core_company",
+										"{sys_id}"
+									]
+								},
+								"description": "Endpoint: Update a contract record in ServiceNow\n\n- Method: PATCH\n- URL: https://illumindev.service-now.com/api/now/table/ast_contract/{sys_id}\n- Purpose: Partially update fields on an existing ast_contract record by sys_id. Only the fields provided in the JSON body are modified.\n\nPath parameters\n- sys_id (string, required): The unique identifier of the ast_contract record to update (example used here: c407543287b9da10dbd2fc89cebb35f5).\n\nAuthentication\n- API Key header: x-sn-apikey: <your_api_key>\n- Ensure the key has permissions to read/write the ast_contract table.\n\nRequest body (JSON)\n- This request uses a raw JSON body. Common fields from the current body are listed below. Unless otherwise noted, values are strings.\n\nRequired (typical for this workflow)\n- number: Contract number (e.g., \"CNTR0010067\").\n- vendor: Reference to vendor (sys_id).\n- supplier: Reference to supplier (sys_id).\n- state: Contract state (e.g., \"draft\").\n- starts: Start date (YYYY-MM-DD).\n- ends: End date (YYYY-MM-DD).\n- contract_model: Reference to contract model (sys_id).\n\nOptional/conditional fields (examples from current body)\n- short_description, description, substate, approver, contract_administrator, payment_schedule, invoice_payment_terms, license_type, vendor_contract, cost_center, sys_domain, sys_domain_path, sys_class_name.\n- Cost/tax related: total_cost, yearly_cost, monthly_cost, cost_per_unit, cost_adjustment, cost_adjustment_percentage, applicable_taxes, tax_rate, tax_cost, sales_tax, tax_exempt, u_hst_gst.\n- Booleans: active, renewable, ratecard, process_non_contractual_slas, u_amortized, u_has_alternatives, u_single_source.\n- Other identifiers: commitment, payment_amount, lifetime_cost, expiration, contract_composite, contract_model, ratecard, vendor, supplier.\n\nExample request body (from this tab)\n{\n  \"cost_adjustment_percentage\": \"0\",\n  \"total_cost\": \"40000\",\n  \"cost_adjustment\": \"0\",\n  \"tax_rate\": \"0\",\n  \"u_amortized\": \"false\",\n  \"applicable_taxes\": \"exempt\",\n  \"number\": \"CNTR0010067\",\n  \"tax_cost\": \"0\",\n  \"sub_total_cost\": \"0\",\n  \"supplier\": \"8d351f0d87fc3650dbd2fc89cebb35a0\",\n  \"sys_domain\": \"global\",\n  \"state\": \"draft\",\n  \"starts\": \"2022-11-29\",\n  \"contract_composite\": \"...\",\n  \"tax_exempt\": \"true\",\n  \"yearly_cost\": \"40000\",\n  \"active\": \"true\",\n  \"commitment\": \"0\",\n  \"payment_amount\": \"40000\",\n  \"sys_domain_path\": \"/\",\n  \"payment_schedule\": \"Annual\",\n  \"cost_center\": \"be361a05871646500790840acebb354c\",\n  \"renewable\": \"false\",\n  \"expiration\": \"0f72e78ec3103000c111113e5bba8fb2\",\n  \"invoice_payment_terms\": \"net_30\",\n  \"contract_administrator\": \"bcc156248767ea10dbd2fc89cebb3540\",\n  \"short_description\": \"Saleo Platform Fee: Mid-Market Package\",\n  \"ratecard\": \"false\",\n  \"process_non_contractual_slas\": \"true\",\n  \"description\": \"Mid-Market Package\",\n  \"sys_class_name\": \"ast_contract\",\n  \"u_has_alternatives\": \"false\",\n  \"vendor\": \"6c5e79ca87355a10dbd2fc89cebb35e3\",\n  \"ends\": \"2028-11-29\",\n  \"contract_model\": \"d781e836c3102000b959fd251eba8f89\",\n  \"approver\": \"bcc156248767ea10dbd2fc89cebb3540\",\n  \"monthly_cost\": \"3333.3333\",\n  \"u_hst_gst\": \"false\",\n  \"vendor_contract\": \"S-1\",\n  \"license_type\": \"saas\",\n  \"lifetime_cost\": \"0\",\n  \"sales_tax\": \"false\",\n  \"substate\": \"awaiting_review\",\n  \"cost_per_unit\": \"0\",\n  \"u_single_source\": \"false\"\n}\n\nSample responses\n- 200 OK: Record updated. Response body typically includes a result object with the updated record fields.\n  Example:\n  {\n    \"result\": {\n      \"sys_id\": \"c407543287b9da10dbd2fc89cebb35f5\",\n      \"number\": \"CNTR0010067\",\n      \"state\": \"draft\",\n      \"...\": \"...\"\n    }\n  }\n- 400 Bad Request: Validation or data type error (e.g., invalid field value, read-only field, or missing required reference).\n  Example:\n  {\n    \"error\": { \"message\": \"Invalid input\", \"detail\": \"Field 'vendor' value is not a valid sys_id\" },\n    \"status\": \"failure\"\n  }\n- 401/403 Unauthorized/Forbidden: Missing or invalid x-sn-apikey, or insufficient roles.\n- 404 Not Found: Contract sys_id does not exist or is not accessible.\n\nTesting notes\n- Use PATCH to update only the fields you include; omit fields you do not want to change.\n- Verify the Authorization header or x-sn-apikey header is present and valid (this request uses x-sn-apikey).\n- Validate date formats (YYYY-MM-DD) and that reference fields contain valid sys_ids.\n- For booleans, confirm whether the instance expects true/false as strings or native booleans; align with your table API settings.\n- After a successful update, GET the same sys_id to confirm persisted values.\n\nRelated\n- Table API docs: ServiceNow Table API for ast_contract"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Vendor - Supplier Ref",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"\",\r\n  \"status\": \"\",\r\n  \"website\": \"\",\r\n  \"notes\": \"\",\r\n  \"vendor_manager\": \"Ahmed Donia\",\r\n  \"vendor_type\": \"\",\r\n  \"street\": \"\",\r\n  \"city\": \"\",\r\n  \"state\": \"\",\r\n  \"country\": \"\",\r\n  \"vendor\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/core_company/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"core_company",
+										"{sys_id}"
+									]
+								},
+								"description": "Title: Update Vendor Supplier Reference\n\nSummary\n- Updates the supplier reference of a ServiceNow Vendor (core_company) record using PATCH.\n\nEndpoint\n- Method: PATCH\n- URL: https://illumindev.service-now.com/api/now/table/core_company/{sys_id}\n- Path params:\n  - sys_id (string, required): The sys_id of the core_company record to update.\n\nAuthentication\n- Uses ServiceNow API key header. Ensure your active environment provides a valid x-sn-apikey value.\n\nRequired Headers\n- x-sn-apikey: Your ServiceNow API key\n- Content-Type: application/json (Postman sets this automatically for raw JSON bodies)\n\nRequest Body\n- Content-Type: application/json\n- Schema:\n  {\n    \"supplier\": \"string\"   // sys_id of the supplier (core_company or vendor reference)\n  }\n- Example:\n  {\n    \"supplier\": \"0035db0d87fc3650dbd2fc89cebb3526\"\n  }\n\nBehavior\n- Performs a partial update (PATCH) on the core_company record identified by sys_id.\n- Only the provided fields are updated; other fields remain unchanged.\n\nSuccess Response\n- Status: 200 OK\n- Body: The updated core_company record under result. Example (truncated):\n  {\n    \"result\": {\n      \"sys_id\": \"6e639de1875e02100790840acebb35e5\",\n      \"name\": \"Fusix Networks BV\",\n      \"supplier\": { \"value\": \"0035db0d87fc3650dbd2fc89cebb3526\" },\n      \"status\": \"active\"\n      // ... other fields\n    }\n  }\n\nCommon Errors\n- 400 Bad Request: Invalid field values or malformed JSON body.\n- 401/403 Unauthorized/Forbidden: Missing/invalid x-sn-apikey.\n- 404 Not Found: No core_company found for the specified sys_id.\n\nNotes\n- Ensure the supplier value is a valid sys_id that your instance recognizes.\n- This request currently sends only the supplier field; extend the body to update additional fields if needed.\n\nTesting Tips\n- Add tests to assert status 200 and that response.result.supplier.value matches the request body.\n- Save an example after a successful call to aid future documentation or mock servers."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Purchase Orders",
+					"item": [
+						{
+							"name": "Update Suppliers",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"name\":\"\",\"legal_name\":\"\",\"u_vendor\":\"\",\"web_site\":\"\",\"street\":\"\",\"city\":\"\",\"state\":\"\",\"country\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_fin_supplier/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_fin_supplier",
+										"{sys_id}"
+									]
+								},
+								"description": "Update Supplier (sn_fin_supplier)\n\nEndpoint\nPATCH /api/now/table/sn_fin_supplier/{sys_id}\nBase URL: https://illumindev.service-now.com\n\nSummary\nUpdates an existing Supplier record in ServiceNow’s sn_fin_supplier table. You must provide the sys_id of the Supplier you want to update. Only fields included in the body will be updated. Empty strings will clear those fields if the API is configured to allow it.\n\nAuthentication\n- Uses x-sn-apikey header for API key auth. Ensure your active environment contains a valid x-sn-apikey value or the request header is set.\n\nPath Parameters\n- sys_id (string, required): Unique identifier of the Supplier record to update.\n\nHeaders\n- x-sn-apikey: API key used to authorize the request.\n- Content-Type: application/json (set automatically for raw JSON bodies).\n\nRequest Body (JSON)\nProvide the fields you wish to update. Example shape:\n{\n  \"name\": \"\",\n  \"legal_name\": \"\",\n  \"u_vendor\": \"\",\n  \"web_site\": \"\",\n  \"street\": \"\",\n  \"city\": \"\",\n  \"state\": \"\",\n  \"country\": \"\"\n}\nNotes:\n- Leaving a field as an empty string may clear the field on the record depending on instance settings.\n- Omit a property to leave it unchanged.\n\nResponses\n- 200 OK: Supplier updated successfully. Response contains the updated record payload under result.\n- 400 Bad Request: Invalid field values or malformed body.\n- 401/403: Authentication or authorization failure (verify x-sn-apikey).\n- 404 Not Found: No Supplier found for the provided sys_id.\n\nUsage Tips\n- Store sys_id in an environment variable (e.g., {{MY_SYS_ID}}) and reference it in the path.\n- Use Tests to assert that the response.result.sys_id matches the requested {{MY_SYS_ID}}.\n- Avoid sending empty strings unless you intend to clear those fields.\n\nRelated Requests\n- Create Supplier\n- Get Suppliers Product Model\n- Update Suppliers Product\n- Update Suppliers Product Model\n\nChange Log\n- Initial documentation added via Agent Mode."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Suppliers Product",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"product_type\":\"\",\"product_category\":\"\",\"supplier\":\"\",\"name\":\"\",\"description\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_supplier_product/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_supplier_product",
+										"{sys_id}"
+									]
+								},
+								"description": "Purpose\nUpdate an existing Supplier Product record in ServiceNow. Use this to modify product metadata such as product_type, product_category, supplier, name, and description.\n\nEndpoint\nPATCH https://illumindev.service-now.com/api/now/table/sn_shop_supplier_product/{sys_id}\n\nPath parameters\n- sys_id (string, required): Unique identifier of the Supplier Product record to update.\n\nAuthentication / Headers\n- x-sn-apikey: Your ServiceNow API key. This request uses a header named x-sn-apikey. Ensure your active environment provides the correct value.\n- Content-Type: application/json (implied by raw JSON body)\n\nRequest body (raw JSON)\nSend only the fields you want to update. Empty strings will set the field to empty. Example structure:\n{\n  \"product_type\": \"\",\n  \"product_category\": \"\",\n  \"supplier\": \"\",\n  \"name\": \"\",\n  \"description\": \"\"\n}\n\nField definitions\n- product_type (string): Reference or code describing the product type.\n- product_category (string): Category or taxonomy value for the product.\n- supplier (string): Supplier identifier or reference.\n- name (string): Human-readable product name.\n- description (string): Brief details about the product.\n\nUsage notes\n- This is a partial update. Include only fields that need changes; unspecified fields remain unchanged.\n- If you provide an empty string for a property, the API may clear the value for that field depending on your instance rules.\n- Ensure {sys_id} corresponds to an existing sn_shop_supplier_product record.\n\nSample requests\nMinimal update (change name only):\nPATCH /api/now/table/sn_shop_supplier_product/1234567890abcdef1234567890abcd\nHeaders:\n- x-sn-apikey: {{x-sn-apikey}}\nBody:\n{\n  \"name\": \"Contoso USB-C Hub\"\n}\n\nUpdate multiple fields:\nPATCH /api/now/table/sn_shop_supplier_product/1234567890abcdef1234567890abcd\nHeaders:\n- x-sn-apikey: {{x-sn-apikey}}\nBody:\n{\n  \"product_type\": \"hardware\",\n  \"product_category\": \"peripherals\",\n  \"supplier\": \"acme-supply\",\n  \"name\": \"ACME USB-C Dock\",\n  \"description\": \"Dual-display USB-C dock\"\n}\n\nExample responses\n200 OK (success)\n{\n  \"result\": {\n    \"sys_id\": \"1234567890abcdef1234567890abcd\",\n    \"product_type\": \"hardware\",\n    \"product_category\": \"peripherals\",\n    \"supplier\": \"acme-supply\",\n    \"name\": \"ACME USB-C Dock\",\n    \"description\": \"Dual-display USB-C dock\",\n    \"sys_updated_on\": \"2025-01-15 12:34:56\"\n  }\n}\n\n400 Bad Request\n{\n  \"error\": { \"message\": \"Invalid field value\", \"detail\": \"product_type is not allowed\" },\n  \"status\": \"failure\"\n}\n\n401 Unauthorized\n{\n  \"error\": { \"message\": \"User Not Authenticated\", \"detail\": \"Missing or invalid API key\" },\n  \"status\": \"failure\"\n}\n\n404 Not Found\n{\n  \"error\": { \"message\": \"Record not found\", \"detail\": \"No record with sys_id provided\" },\n  \"status\": \"failure\"\n}\n\nTips\n- Use the Params tab (Path Variables) to set sys_id or replace {sys_id} directly in the URL.\n- Keep the request body minimal to avoid unintended changes.\n- Use environment variables for credentials and IDs where possible (e.g., {{MY_SYS_ID}})."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Suppliers Product Model",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"manufacturer\":\"\",\"name\":\"\",\"short_description\":\"\",\"cmdb_model_category\":\"\"}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/cmdb_model/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"cmdb_model",
+										"{sys_id}"
+									]
+								},
+								"description": "Update Suppliers Product Model (ServiceNow CMDB Model)\n\nEndpoint\nPATCH https://illumindev.service-now.com/api/now/table/cmdb_model/{sys_id}\n\nPurpose\nUpdates an existing CMDB Model record in ServiceNow identified by its sys_id. Use this to modify metadata for a supplier’s product model.\n\nPath parameters\n- sys_id (string, required): Unique identifier of the cmdb_model record to update.\n\nAuthentication\n- Uses API key header (x-sn-apikey). Ensure the active environment provides a valid value.\n\nHeaders\n- x-sn-apikey: Your ServiceNow API key.\n- Content-Type: application/json (implied by raw JSON body).\n\nRequest body (JSON)\nInclude only the fields you want to update. Empty strings will clear existing values. Common fields:\n- manufacturer (string): Name or reference to the manufacturer.\n- name (string): Display name of the model.\n- short_description (string): Brief summary describing the model.\n- cmdb_model_category (string): Category for grouping models.\n\nExample body\n{\n  \"manufacturer\": \"ACME Corp\",\n  \"name\": \"ACME Model X\",\n  \"short_description\": \"Lightweight laptop model\",\n  \"cmdb_model_category\": \"Hardware\"\n}\n\nNotes\n- PATCH is partial update: unspecified fields remain unchanged.\n- Providing an empty string will set that field to blank in ServiceNow.\n- If you have an environment variable for the target sys_id (e.g., {{MY_SYS_ID}}), you can replace the path parameter with it.\n\nSuccess response\n- 200 OK: Returns the updated cmdb_model record in the result payload.\n\nCommon errors\n- 400 Bad Request: Invalid field values or malformed JSON.\n- 401/403: Authentication or authorization error—check x-sn-apikey and permissions.\n- 404 Not Found: No cmdb_model with the specified sys_id.\n\nTroubleshooting\n- Verify the sys_id exists by performing a GET on /api/now/table/cmdb_model?sys_id={sys_id}.\n- Confirm your role has rights to update cmdb_model records.\n"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Purchase Order",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"display_name\":\"\",\"status\":\"\",\"supplier\":\"\",\"total_amount\":\"\",\"purchase_order_type\":\"\",\"created\":\"\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_purchase_order",
+										"{sys_id}"
+									]
+								},
+								"description": "Update Purchase Order (ServiceNow)\n\nEndpoint\nPATCH https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/{sys_id}\n\nPurpose\nUpdates an existing Purchase Order record in ServiceNow. Only the fields provided in the body will be updated.\n\nPath variables\n- sys_id (string, required): Unique identifier of the Purchase Order to update.\n\nHeaders\n- x-sn-apikey (string, required): API key used for authentication/authorization.\n- Content-Type: application/json\n\nRequest body (JSON)\nSend only the fields you want to change. Empty strings will overwrite existing values with empty.\n- display_name (string): Human-readable name of the purchase order.\n- status (string): Current status code/name for the purchase order.\n- supplier (string): Reference or identifier of the supplier/vendor associated with the order.\n- total_amount (number|string): Total amount for the purchase order. If string, use a numeric string compatible with the instance.\n- purchase_order_type (string): Type/category of the purchase order.\n- created (string, ISO 8601): Creation timestamp, if updates are permitted by instance rules.\n\nBehavior\n- PATCH will partially update the record identified by {sys_id}.\n- Fields omitted from the body are left unchanged.\n- Fields included with empty values may clear the existing data, depending on instance business rules.\n\nResponse\n- 200 OK: Returns the updated record payload.\n- 4xx/5xx: Error details per ServiceNow REST API conventions.\n\nNotes\n- Ensure the {sys_id} exists and that your role/API key has permission to update sn_shop_purchase_order records.\n- Consider replacing hardcoded values with Postman variables (e.g., {{MY_SYS_ID}}) for reusability."
+							},
+							"response": []
+						},
+						{
+							"name": "Create New Currency Instance - Unit Price Copy",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"amount\":\"1988\",\"currency\":\"USD\",\"field\":\"unit_price\"}"
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/fx_currency2_instance/8f25ade11bd9b6108d5f64e1604bcbd8",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"fx_currency2_instance",
+										"8f25ade11bd9b6108d5f64e1604bcbd8"
+									]
+								},
+								"description": "Creates a new fx_currency2_instance record in ServiceNow. Use the returned sys_id to reference this currency instance in unit_price or total_line_amount fields on related records.\n\nEndpoint\n- Method: POST\n- URL: https://illumindev.service-now.com/api/now/table/fx_currency2_instance\n\nHeaders\n- Accept: application/json\n- Content-Type: application/json\n\nAuth\n- This instance typically requires authentication. Ensure valid credentials or an API key are configured in your active environment (e.g., via variables {{username}} / {{password}} or instance-specific auth).\n\nPath/Query Params\n- None.\n\nRequest Body (raw JSON)\n{\n  \"fx_currency\": \"{{currencyCode}}\",   // ISO 4217 currency code (e.g., USD, EUR)\n  \"value\": \"{{amount}}\"                // Numeric amount as string; decimals allowed\n}\n\nVariables\n- {{currencyCode}}: ISO 4217 currency code for the instance you want to create.\n- {{amount}}: The monetary value for this instance.\n\nSample Use\n- Set currencyCode=USD and amount=1234.56 in your environment, then send the request.\n\nExpected Response\n- 201 Created with a body containing the new record, including the field sys_id.\n\nPost-creation\n- Use the returned sys_id in related records (e.g., Purchase Order Line) for unit_price or total_line_amount.\n\nCommon Errors\n- 400 Bad Request: Missing or invalid fields.\n- 401/403 Unauthorized: Verify authentication or permissions.\n\nNotes\n- This request does not currently include pre-request or test scripts. Consider adding tests to assert status code === 201 and that a sys_id is present in the response."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Purchase Order Line",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-sn-apikey",
+										"value": "now_T3YHCK-eCqSh6yuBpR3cTrV51gt2aPF21B_DFlJhIY6UscsHw4RqrfhUMYSWKQQAXhhxvaEQqEzXIZ8JHd5d0w",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"display_name\":\"\",\"status\":\"\",\"supplier\":\"\",\"total_amount\":\"\",\"purchase_order_type\":\"\",\"created\":\"\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/{sys_id}",
+									"protocol": "https",
+									"host": [
+										"illumindev",
+										"service-now",
+										"com"
+									],
+									"path": [
+										"api",
+										"now",
+										"table",
+										"sn_shop_purchase_order",
+										"{sys_id}"
+									]
+								},
+								"description": "Purpose  \nUpdate a ServiceNow Purchase Order record by sys_id. This request partially updates (PATCH) fields on the sn_shop_purchase_order table.\n\nMethod and URL  \nPATCH [https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/{sys_id}](https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/%7Bsys_id%7D)\n\n- Path param: {sys_id} (string, required) — The unique sys_id of the Purchase Order to update.\n    \n\nRequired headers and variables\n\n- Header: x-sn-apikey:\n    \n- Environment variable(s):\n    - x-sn-apikey (recommended) — store your API key in the active environment and reference it via the header if desired.\n        \n\nRequest body\n\n- Content-Type: application/json (raw)\n    \n- Schema (partial update — include only fields you want to modify):  \n    {  \n    \"display_name\": string,  \n    \"status\": string,  \n    \"supplier\": string,  \n    \"total_amount\": number|string,  \n    \"purchase_order_type\": string,  \n    \"created\": string (ISO 8601 datetime)  \n    }\n    \n- Example body (matches current tab configuration):  \n    {  \n    \"display_name\": \"\",  \n    \"status\": \"\",  \n    \"supplier\": \"\",  \n    \"total_amount\": \"\",  \n    \"purchase_order_type\": \"\",  \n    \"created\": \"\"  \n    }\n    \n\nCommon responses\n\n- 200 OK — Record updated. Returns the updated record payload.\n    \n- 400 Bad Request — Invalid body or field names.\n    \n- 401/403 Unauthorized/Forbidden — Invalid or missing API key/permissions.\n    \n- 404 Not Found — sys_id does not exist.\n    \n- 415 Unsupported Media Type — Ensure body is JSON.\n    \n\ncURL example  \ncurl --request PATCH  \n\\--url \"[https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/{sys_id}\"](https://illumindev.service-now.com/api/now/table/sn_shop_purchase_order/%7Bsys_id%7D)  \n\\--header \"x-sn-apikey: ${x_sn_apikey}\"  \n\\--header \"Content-Type: application/json\"  \n\\--data '{  \n\"display_name\":\"\",  \n\"status\":\"\",  \n\"supplier\":\"\",  \n\"total_amount\":\"\",  \n\"purchase_order_type\":\"\",  \n\"created\":\"\"  \n}'\n\nNotes\n\n- This request performs a partial update; omit properties you do not want to change.\n    \n- Ensure {sys_id} is set either via a path variable in the URL or by replacing it directly before sending."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
