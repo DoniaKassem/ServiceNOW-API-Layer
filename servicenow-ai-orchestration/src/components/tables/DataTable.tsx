@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   ChevronUp,
   ChevronDown,
@@ -19,10 +19,12 @@ import {
   AlertCircle,
   Save,
   X,
+  GripVertical,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { format } from 'date-fns';
 import { useTableViewStore } from '../../stores/tableViewStore';
+import { useColumnDragDrop } from '../../hooks/useColumnDragDrop';
 import type { TableViewType, ColumnConfig, FilterCondition } from '../../types';
 
 interface DataTableProps {
@@ -78,6 +80,7 @@ export function DataTable({
     startEditing,
     commitEdit,
     cancelEditing,
+    reorderColumns,
   } = useTableViewStore();
 
   const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -87,10 +90,42 @@ export function DataTable({
   const [editingCell, setEditingCell] = useState<{ rowId: string; field: string } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const visibleColumns = useMemo(() => getVisibleColumns(viewType), [viewType, preferences]);
   const pageSize = preferences[viewType].pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
+
+  // Column drag-and-drop
+  const handleColumnReorder = useCallback((fromIndex: number, toIndex: number) => {
+    // Account for checkbox column offset
+    reorderColumns(viewType, fromIndex, toIndex);
+  }, [viewType, reorderColumns]);
+
+  const {
+    dragState,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd,
+    getColumnDropIndicator,
+  } = useColumnDragDrop(visibleColumns, handleColumnReorder);
+
+  // Track scroll for sticky header shadow
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      setIsScrolled(container.scrollTop > 0);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Debounce search
   useEffect(() => {
@@ -398,7 +433,7 @@ export function DataTable({
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-auto">
+      <div ref={tableContainerRef} className="flex-1 overflow-auto">
         {error ? (
           <div className="flex flex-col items-center justify-center h-full text-red-500">
             <AlertCircle className="w-12 h-12 mb-4" />
@@ -413,10 +448,15 @@ export function DataTable({
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0">
+            <thead
+              className={clsx(
+                'bg-gray-50 sticky top-0 z-10 transition-shadow duration-200',
+                isScrolled && 'shadow-md'
+              )}
+            >
               <tr>
                 {/* Checkbox Column */}
-                <th className="w-12 px-4 py-3 border-b border-gray-200">
+                <th className="w-12 px-4 py-3 border-b border-gray-200 bg-gray-50">
                   <button onClick={handleSelectAll} className="text-gray-400 hover:text-gray-600">
                     {selectedRows.length === data.length && data.length > 0 ? (
                       <CheckSquare className="w-4 h-4" />
@@ -426,25 +466,47 @@ export function DataTable({
                   </button>
                 </th>
 
-                {/* Data Columns */}
-                {visibleColumns.map((column) => (
-                  <th
-                    key={column.field}
-                    onClick={() => handleSort(column.field)}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 cursor-pointer hover:bg-gray-100"
-                  >
-                    <div className="flex items-center gap-1">
-                      {column.label}
-                      {sortField === column.field && (
-                        sortDirection === 'asc' ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )
+                {/* Data Columns - Draggable */}
+                {visibleColumns.map((column, index) => {
+                  const dropIndicator = getColumnDropIndicator(index);
+                  const isDragging = dragState.isDragging && dragState.draggedIndex === index;
+
+                  return (
+                    <th
+                      key={column.field}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnter={(e) => handleDragEnter(e, index)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={handleDragEnd}
+                      className={clsx(
+                        'px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50 select-none relative',
+                        isDragging && 'opacity-50',
+                        dropIndicator === 'left' && 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-blue-500',
+                        dropIndicator === 'right' && 'after:absolute after:right-0 after:top-0 after:bottom-0 after:w-0.5 after:bg-blue-500'
                       )}
-                    </div>
-                  </th>
-                ))}
+                    >
+                      <div className="flex items-center gap-1 group">
+                        <GripVertical className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab flex-shrink-0" />
+                        <button
+                          onClick={() => handleSort(column.field)}
+                          className="flex items-center gap-1 hover:text-gray-700"
+                        >
+                          {column.label}
+                          {sortField === column.field && (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )
+                          )}
+                        </button>
+                      </div>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
