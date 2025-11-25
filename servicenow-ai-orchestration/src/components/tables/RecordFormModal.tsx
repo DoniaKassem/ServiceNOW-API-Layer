@@ -15,6 +15,7 @@ import { useRequestLogStore } from '../../stores/requestLogStore';
 import { useWorkflowStore } from '../../stores/workflowStore';
 import { getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
 import { TABLE_VIEW_CONFIG, type TableViewType } from '../../types';
+import { getSysId, getRecordDisplayName } from '../../utils/serviceNowHelpers';
 
 interface RecordFormModalProps {
   viewType: TableViewType;
@@ -348,7 +349,7 @@ export function RecordFormModal({
                 <ul className="mt-2 space-y-1">
                   {duplicateWarning.matches.slice(0, 3).map((match, index) => (
                     <li key={index} className="text-sm text-yellow-700">
-                      {(match.name || match.display_name || match.number) as string} ({match.sys_id as string})
+                      {getRecordDisplayName(match)} ({getSysId(match.sys_id)})
                     </li>
                   ))}
                 </ul>
@@ -546,8 +547,8 @@ function ReferenceField({
   });
 
   const handleSelect = (record: Record<string, unknown>) => {
-    onChange(record.sys_id as string);
-    setSelectedDisplay((record.name || record.display_name || record.number) as string);
+    onChange(getSysId(record.sys_id));
+    setSelectedDisplay(getRecordDisplayName(record));
     setIsOpen(false);
     setSearchQuery('');
   };
@@ -585,22 +586,26 @@ function ReferenceField({
               <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
             </div>
           ) : searchResults && searchResults.length > 0 ? (
-            searchResults.map((record: Record<string, unknown>) => (
-              <button
-                key={record.sys_id as string}
-                type="button"
-                onClick={() => handleSelect(record)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
-              >
-                <Link2 className="w-4 h-4 text-gray-400" />
-                <span className="text-sm text-gray-700">
-                  {(record.name || record.display_name || record.number) as string}
-                </span>
-                {value === record.sys_id && (
-                  <Check className="w-4 h-4 text-green-500 ml-auto" />
-                )}
-              </button>
-            ))
+            searchResults.map((record: Record<string, unknown>, index: number) => {
+              const recordSysId = getSysId(record.sys_id);
+              const recordName = getRecordDisplayName(record);
+              return (
+                <button
+                  key={recordSysId || `result-${index}`}
+                  type="button"
+                  onClick={() => handleSelect(record)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50"
+                >
+                  <Link2 className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">
+                    {recordName}
+                  </span>
+                  {value === recordSysId && (
+                    <Check className="w-4 h-4 text-green-500 ml-auto" />
+                  )}
+                </button>
+              );
+            })
           ) : searchQuery.length >= 2 ? (
             <div className="px-3 py-2 text-sm text-gray-500">
               No results found

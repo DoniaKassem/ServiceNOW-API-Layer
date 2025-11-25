@@ -292,7 +292,7 @@ export function RecordDetailModal({
                   label={relConfig.label}
                   table={relConfig.table}
                   field={relConfig.field}
-                  recordSysId={record.sys_id as string}
+                  recordSysId={getSysId(record.sys_id)}
                 />
               ))}
 
@@ -308,7 +308,7 @@ export function RecordDetailModal({
         {/* Footer */}
         <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
           <div className="text-xs text-gray-500">
-            sys_id: {record.sys_id as string}
+            sys_id: {getSysId(record.sys_id)}
           </div>
           <button
             onClick={onClose}

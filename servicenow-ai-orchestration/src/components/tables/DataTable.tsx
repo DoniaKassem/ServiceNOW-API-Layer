@@ -149,7 +149,7 @@ export function DataTable({
     if (selectedRows.length === data.length) {
       clearSelection();
     } else {
-      selectAllRows(data.map((row) => row.sys_id as string));
+      selectAllRows(data.map((row) => getSysId(row.sys_id)));
     }
   }, [selectedRows, data, selectAllRows, clearSelection]);
 

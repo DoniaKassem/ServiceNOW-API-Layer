@@ -1,6 +1,7 @@
 import { X, AlertTriangle, CheckCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { TableViewType, DuplicateMatch } from '../../types';
+import { getSysId, getRecordDisplayName } from '../../utils/serviceNowHelpers';
 
 interface DuplicateWarningModalProps {
   viewType: TableViewType;
@@ -180,12 +181,13 @@ export async function checkForDuplicates(
       });
 
       for (const record of exactResponse.result || []) {
-        if (excludeSysId && record.sys_id === excludeSysId) continue;
-        if (matches.some((m) => m.sysId === record.sys_id)) continue;
+        const recordSysId = getSysId(record.sys_id);
+        if (excludeSysId && recordSysId === excludeSysId) continue;
+        if (matches.some((m) => m.sysId === recordSysId)) continue;
 
         matches.push({
-          sysId: record.sys_id as string,
-          displayValue: (record.name || record.display_name || record.number || record.sys_id) as string,
+          sysId: recordSysId,
+          displayValue: getRecordDisplayName(record),
           matchType: 'exact',
           matchedFields: [field],
           record,
@@ -205,9 +207,10 @@ export async function checkForDuplicates(
       });
 
       for (const record of partialResponse.result || []) {
-        if (excludeSysId && record.sys_id === excludeSysId) continue;
+        const recordSysId = getSysId(record.sys_id);
+        if (excludeSysId && recordSysId === excludeSysId) continue;
 
-        const existingMatch = matches.find((m) => m.sysId === record.sys_id);
+        const existingMatch = matches.find((m) => m.sysId === recordSysId);
         if (existingMatch) {
           // Update existing match with additional matched field
           if (!existingMatch.matchedFields.includes(field)) {
@@ -215,8 +218,8 @@ export async function checkForDuplicates(
           }
         } else {
           matches.push({
-            sysId: record.sys_id as string,
-            displayValue: (record.name || record.display_name || record.number || record.sys_id) as string,
+            sysId: recordSysId,
+            displayValue: getRecordDisplayName(record),
             matchType: 'partial',
             matchedFields: [field],
             record,

@@ -15,6 +15,7 @@ import { clsx } from 'clsx';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
 import { getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
+import { getSysId, getDisplayValue } from '../../utils/serviceNowHelpers';
 import type { ClassificationType } from '../../types';
 
 interface ExpenseLineClassificationProps {
@@ -144,7 +145,7 @@ export function ExpenseLineClassification({
         throw new Error('No record selected');
       }
 
-      const linkedSysId = selectedRecord.sys_id as string;
+      const linkedSysId = getSysId(selectedRecord.sys_id);
 
       if (classificationType === 'configuration_item') {
         // Update expense line with CI reference
@@ -457,11 +458,14 @@ export function ExpenseLineClassification({
                   </div>
                 ) : searchResults && searchResults.length > 0 ? (
                   <div className="mt-2 border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-48 overflow-y-auto">
-                    {searchResults.map((record: Record<string, unknown>) => {
-                      const isSelected = selectedRecord?.sys_id === record.sys_id;
+                    {searchResults.map((record: Record<string, unknown>, index: number) => {
+                      const recordSysId = getSysId(record.sys_id);
+                      const isSelected = getSysId(selectedRecord?.sys_id) === recordSysId;
+                      const recordName = getDisplayValue(record.name) || getDisplayValue(record.display_name);
+                      const recordDescription = getDisplayValue(record.short_description);
                       return (
                         <button
-                          key={record.sys_id as string}
+                          key={recordSysId || `result-${index}`}
                           onClick={() => {
                             setSelectedRecord(record);
                             setShowCreateForm(false);
@@ -474,11 +478,11 @@ export function ExpenseLineClassification({
                           {getClassificationIcon(classificationType)}
                           <div className="flex-1">
                             <span className="text-sm font-medium text-gray-900">
-                              {(record.name || record.display_name) as string}
+                              {recordName}
                             </span>
-                            {typeof record.short_description === 'string' && record.short_description && (
+                            {recordDescription && (
                               <span className="text-xs text-gray-500 block truncate">
-                                {record.short_description}
+                                {recordDescription}
                               </span>
                             )}
                           </div>
