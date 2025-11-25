@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Activity,
   Table,
+  BarChart3,
 } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
@@ -35,6 +36,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/', label: 'Dashboard', icon: Home },
+  { path: '/analytics', label: 'Analytics', icon: BarChart3 },
   { path: '/document', label: 'Document Processing', icon: FileText },
   { path: '/requests', label: 'Request Console', icon: Send },
   {

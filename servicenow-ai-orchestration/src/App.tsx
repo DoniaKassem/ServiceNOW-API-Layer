@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from './components/common/Layout';
 import { Dashboard } from './components/Dashboard';
+import { AnalyticsDashboard } from './components/dashboard';
 import { SettingsPanel } from './components/settings/SettingsPanel';
 import { DocumentUpload } from './components/document/DocumentUpload';
 import { RequestBuilder } from './components/request/RequestBuilder';
@@ -69,6 +70,9 @@ function App() {
           <Routes>
             {/* Dashboard */}
             <Route path="/" element={<Dashboard />} />
+
+            {/* Analytics Dashboard */}
+            <Route path="/analytics" element={<AnalyticsDashboard />} />
 
             {/* Document Processing */}
             <Route path="/document" element={<DocumentProcessingPage />} />

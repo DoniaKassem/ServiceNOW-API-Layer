@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { RefreshCw, Clock } from 'lucide-react';
+import { format } from 'date-fns';
 import { DataTable } from './DataTable';
 import { RecordDetailModal } from './RecordDetailModal';
 import { RecordFormModal } from './RecordFormModal';
@@ -90,8 +92,13 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     };
   }, [viewType, config, pageSize, currentPage, getVisibleColumns, buildQueryString]);
 
-  // Fetch data query
-  const { data, isLoading, error, refetch } = useQuery({
+  // Calculate polling interval
+  const pollingInterval = settings.polling?.enabled
+    ? (settings.polling.interval || 30) * 1000
+    : false;
+
+  // Fetch data query with polling support
+  const { data, isLoading, error, refetch, dataUpdatedAt, isFetching } = useQuery({
     queryKey: ['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection],
     queryFn: async () => {
       const api = getApi();
@@ -148,6 +155,8 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
       }
     },
     enabled: !!settings.servicenow.apiKey,
+    refetchInterval: pollingInterval,
+    refetchIntervalInBackground: false, // Only poll when tab is focused
   });
 
   // Update mutation
@@ -375,10 +384,36 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     <div className="h-full flex flex-col bg-gray-50">
       {/* Page Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900">{config.label}</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Viewing records from {config.table}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{config.label}</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Viewing records from {config.table}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            {/* Last Refreshed Indicator */}
+            {settings.polling?.showLastRefreshed && dataUpdatedAt > 0 && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Clock className="w-4 h-4" />
+                <span>
+                  Last updated: {format(new Date(dataUpdatedAt), 'HH:mm:ss')}
+                </span>
+              </div>
+            )}
+            {/* Polling Status */}
+            {settings.polling?.enabled && (
+              <div className="flex items-center gap-2">
+                <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+                  isFetching ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                }`}>
+                  <RefreshCw className={`w-3 h-3 ${isFetching ? 'animate-spin' : ''}`} />
+                  {isFetching ? 'Refreshing...' : `Auto-refresh: ${settings.polling.interval}s`}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Data Table */}

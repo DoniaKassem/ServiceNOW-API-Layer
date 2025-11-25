@@ -267,6 +267,11 @@ export interface AppSettings {
     currency: string;
     autoSaveDrafts: boolean;
   };
+  polling: {
+    enabled: boolean;
+    interval: number; // in seconds
+    showLastRefreshed: boolean;
+  };
 }
 
 // Table name mapping
