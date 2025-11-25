@@ -21,6 +21,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { ServiceNowAPI, getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
 import { TABLE_VIEW_CONFIG, type TableViewType } from '../../types';
 import { exportToExcel } from '../../utils/excelExport';
+import { getSysId } from '../../utils/serviceNowHelpers';
 
 interface TableViewPageProps {
   viewType: TableViewType;
@@ -352,7 +353,7 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
           if (!old) return old;
           return {
             ...old,
-            records: old.records.filter((record) => !sysIds.includes(record.sys_id as string)),
+            records: old.records.filter((record) => !sysIds.includes(getSysId(record.sys_id))),
             totalCount: old.totalCount - sysIds.length,
           };
         }
@@ -539,7 +540,7 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     if (deleteIds.length > 3) {
       // For many records, use batch operation with progress tracking
       const recordsToDelete = data?.records.filter((r) =>
-        deleteIds.includes(r.sys_id as string)
+        deleteIds.includes(getSysId(r.sys_id))
       ) || [];
 
       setBatchOperation({
@@ -635,7 +636,7 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
           }}
           onDelete={() => {
             setShowDetailModal(false);
-            setDeleteIds([selectedRecord.sys_id as string]);
+            setDeleteIds([getSysId(selectedRecord.sys_id)]);
             setShowDeleteModal(true);
           }}
           onClone={() => {

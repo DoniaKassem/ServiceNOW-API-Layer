@@ -16,6 +16,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
 import { getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
 import { TABLE_VIEW_CONFIG, type TableViewType } from '../../types';
+import { getSysId, getRecordDisplayName } from '../../utils/serviceNowHelpers';
 
 export type BatchOperationType = 'update' | 'delete';
 
@@ -60,16 +61,12 @@ export function BatchOperationModal({
   const [isCancelled, setIsCancelled] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recordStatuses, setRecordStatuses] = useState<RecordStatus[]>(() =>
-    records.map((record) => ({
-      sysId: record.sys_id as string,
-      displayName: getDisplayName(record),
+    records.map((record, index) => ({
+      sysId: getSysId(record.sys_id) || `record-${index}`,
+      displayName: getRecordDisplayName(record),
       status: 'pending' as const,
     }))
   );
-
-  function getDisplayName(record: Record<string, unknown>): string {
-    return (record.name || record.number || record.display_name || record.sys_id) as string;
-  }
 
   const getApi = () => {
     try {
@@ -88,7 +85,7 @@ export function BatchOperationModal({
   // Execute a single operation
   const executeOperation = async (record: Record<string, unknown>): Promise<{ success: boolean; error?: string }> => {
     const api = getApi();
-    const sysId = record.sys_id as string;
+    const sysId = getSysId(record.sys_id);
     const startTime = Date.now();
 
     const logId = addEntry({
@@ -150,7 +147,7 @@ export function BatchOperationModal({
       }
 
       const record = records[i];
-      const sysId = record.sys_id as string;
+      const sysId = getSysId(record.sys_id);
 
       // Update status to in_progress
       setRecordStatuses((prev) =>

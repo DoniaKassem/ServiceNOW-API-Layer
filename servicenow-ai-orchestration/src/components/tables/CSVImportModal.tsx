@@ -46,6 +46,13 @@ const EXCLUDED_FIELDS = [
   'sys_tags',
 ];
 
+// Reference fields that need to be resolved from names to sys_ids
+const REFERENCE_FIELD_CONFIG: Record<string, { table: string; nameField: string; query?: string }> = {
+  vendor: { table: 'core_company', nameField: 'name', query: 'vendor=true' },
+  supplier: { table: 'sn_fin_supplier', nameField: 'name' },
+  u_vendor: { table: 'core_company', nameField: 'name', query: 'vendor=true' },
+};
+
 export function CSVImportModal({
   viewType,
   onClose,
@@ -222,6 +229,71 @@ export function CSVImportModal({
     });
   }, [csvData, fieldMapping]);
 
+  // Cache for resolved reference field values (name -> sys_id)
+  const [referenceCache, setReferenceCache] = useState<Record<string, Record<string, string>>>({});
+
+  // Resolve a reference field value (name) to sys_id
+  const resolveReferenceField = async (
+    api: ReturnType<typeof getServiceNowAPI>,
+    field: string,
+    value: string
+  ): Promise<string | null> => {
+    const fieldConfig = REFERENCE_FIELD_CONFIG[field];
+    if (!fieldConfig) return value; // Not a reference field, return as-is
+
+    // Check cache first
+    if (referenceCache[field]?.[value.toLowerCase()]) {
+      return referenceCache[field][value.toLowerCase()];
+    }
+
+    // Query ServiceNow for the record
+    try {
+      const query = fieldConfig.query
+        ? `${fieldConfig.query}^${fieldConfig.nameField}=${value}`
+        : `${fieldConfig.nameField}=${value}`;
+
+      const response = await api.get<Record<string, unknown>>(fieldConfig.table, {
+        sysparm_query: query,
+        sysparm_limit: 1,
+        sysparm_fields: 'sys_id,name',
+      });
+
+      if (response.result && response.result.length > 0) {
+        const sysId = response.result[0].sys_id as string;
+        // Update cache
+        setReferenceCache((prev) => ({
+          ...prev,
+          [field]: { ...prev[field], [value.toLowerCase()]: sysId },
+        }));
+        return sysId;
+      }
+
+      // Try fuzzy match
+      const fuzzyQuery = fieldConfig.query
+        ? `${fieldConfig.query}^${fieldConfig.nameField}LIKE${value}`
+        : `${fieldConfig.nameField}LIKE${value}`;
+
+      const fuzzyResponse = await api.get<Record<string, unknown>>(fieldConfig.table, {
+        sysparm_query: fuzzyQuery,
+        sysparm_limit: 1,
+        sysparm_fields: 'sys_id,name',
+      });
+
+      if (fuzzyResponse.result && fuzzyResponse.result.length > 0) {
+        const sysId = fuzzyResponse.result[0].sys_id as string;
+        setReferenceCache((prev) => ({
+          ...prev,
+          [field]: { ...prev[field], [value.toLowerCase()]: sysId },
+        }));
+        return sysId;
+      }
+    } catch (err) {
+      console.error(`Failed to resolve ${field} reference:`, err);
+    }
+
+    return null; // Could not resolve
+  };
+
   // Import mutation
   const importMutation = useMutation({
     mutationFn: async () => {
@@ -243,7 +315,24 @@ export function CSVImportModal({
 
       // Import records one by one (or in batches)
       for (let i = 0; i < mappedData.length; i++) {
-        const recordData = mappedData[i];
+        const recordData = { ...mappedData[i] };
+
+        // Resolve reference fields (supplier, vendor) to sys_ids
+        for (const [field, value] of Object.entries(recordData)) {
+          if (REFERENCE_FIELD_CONFIG[field] && value) {
+            const resolvedSysId = await resolveReferenceField(api, field, value);
+            if (resolvedSysId) {
+              recordData[field] = resolvedSysId;
+            } else {
+              // Could not resolve - add warning but try to continue
+              progressState.errors.push({
+                row: i + 1,
+                message: `Could not find ${field} "${value}" - field will be empty`,
+              });
+              delete recordData[field]; // Remove unresolved reference
+            }
+          }
+        }
 
         const startTime = Date.now();
         const logId = addEntry({

@@ -15,6 +15,7 @@ import { clsx } from 'clsx';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
 import { getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
+import { getSysId, getDisplayValue } from '../../utils/serviceNowHelpers';
 
 interface VendorSupplierLinkingProps {
   mode: 'vendor' | 'supplier';
@@ -319,7 +320,7 @@ export function VendorSupplierLinking({
 
   const handleLink = () => {
     if (selectedRecord) {
-      linkMutation.mutate(selectedRecord.sys_id as string);
+      linkMutation.mutate(getSysId(selectedRecord.sys_id));
     }
   };
 
@@ -394,11 +395,14 @@ export function VendorSupplierLinking({
               </div>
             ) : searchResults && searchResults.length > 0 ? (
               <div className="mt-2 border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-48 overflow-y-auto">
-                {searchResults.map((record: Record<string, unknown>) => {
-                  const isSelected = selectedRecord?.sys_id === record.sys_id;
+                {searchResults.map((record: Record<string, unknown>, index: number) => {
+                  const recordSysId = getSysId(record.sys_id);
+                  const isSelected = getSysId(selectedRecord?.sys_id) === recordSysId;
+                  const recordName = getDisplayValue(record.name);
+                  const recordCity = getDisplayValue(record.city);
                   return (
                     <button
-                      key={record.sys_id as string}
+                      key={recordSysId || `result-${index}`}
                       onClick={() => handleSelectRecord(record)}
                       className={clsx(
                         'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
@@ -412,11 +416,11 @@ export function VendorSupplierLinking({
                       )}
                       <div className="flex-1">
                         <span className="text-sm font-medium text-gray-900">
-                          {record.name as string}
+                          {recordName}
                         </span>
-                        {typeof record.city === 'string' && record.city && (
+                        {recordCity && (
                           <span className="text-xs text-gray-500 ml-2">
-                            {record.city}
+                            {recordCity}
                           </span>
                         )}
                       </div>

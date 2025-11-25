@@ -23,8 +23,9 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { format } from 'date-fns';
-import { useTableViewStore } from '../../stores/tableViewStore';
+import { useTableViewStore, PAGE_SIZE_OPTIONS } from '../../stores/tableViewStore';
 import { useColumnDragDrop } from '../../hooks/useColumnDragDrop';
+import { getSysId, getDisplayValue } from '../../utils/serviceNowHelpers';
 import type { TableViewType, ColumnConfig, FilterCondition } from '../../types';
 
 interface DataTableProps {
@@ -81,6 +82,7 @@ export function DataTable({
     commitEdit,
     cancelEditing,
     reorderColumns,
+    setPageSize,
   } = useTableViewStore();
 
   const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -147,7 +149,7 @@ export function DataTable({
     if (selectedRows.length === data.length) {
       clearSelection();
     } else {
-      selectAllRows(data.map((row) => row.sys_id as string));
+      selectAllRows(data.map((row) => getSysId(row.sys_id)));
     }
   }, [selectedRows, data, selectAllRows, clearSelection]);
 
@@ -194,24 +196,26 @@ export function DataTable({
   const formatCellValue = useCallback((value: unknown, column: ColumnConfig): string => {
     if (value === null || value === undefined) return '-';
 
-    // Handle reference fields (display value)
+    // Handle reference fields (display value) using helper
     if (typeof value === 'object' && value !== null) {
-      const refValue = value as { display_value?: string; value?: string };
-      return refValue.display_value || refValue.value || '-';
+      const displayVal = getDisplayValue(value);
+      return displayVal || '-';
     }
 
+    const stringValue = String(value);
+
     // Handle dates
-    if (column.type === 'date' && typeof value === 'string') {
+    if (column.type === 'date' && stringValue) {
       try {
-        return format(new Date(value), 'MMM d, yyyy');
+        return format(new Date(stringValue), 'MMM d, yyyy');
       } catch {
-        return value;
+        return stringValue;
       }
     }
 
     // Handle currency
-    if (column.type === 'currency' && typeof value === 'string') {
-      const num = parseFloat(value);
+    if (column.type === 'currency' && stringValue) {
+      const num = parseFloat(stringValue);
       if (!isNaN(num)) {
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
@@ -225,7 +229,7 @@ export function DataTable({
       return value === 'true' || value === true ? 'Yes' : 'No';
     }
 
-    return String(value);
+    return stringValue || '-';
   }, []);
 
   const getCellClassName = useCallback((rowId: string, field: string): string => {
@@ -528,8 +532,8 @@ export function DataTable({
                   </td>
                 </tr>
               ) : (
-                data.map((row) => {
-                  const rowId = row.sys_id as string;
+                data.map((row, rowIndex) => {
+                  const rowId = getSysId(row.sys_id) || `row-${rowIndex}`;
                   const isSelected = selectedRows.includes(rowId);
 
                   return (
@@ -600,8 +604,26 @@ export function DataTable({
 
       {/* Pagination */}
       <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-white">
-        <div className="text-sm text-gray-500">
-          Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} records
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-500">
+            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} records
+          </div>
+
+          {/* Page Size Selector */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-500">Rows per page:</label>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(viewType, Number(e.target.value))}
+              className="px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
