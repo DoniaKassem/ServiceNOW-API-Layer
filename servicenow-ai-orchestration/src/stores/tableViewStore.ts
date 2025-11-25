@@ -102,6 +102,9 @@ const DEFAULT_COLUMN_SETS: Record<TableViewType, string[]> = {
   ],
 };
 
+// Default page size options - increased from 25 to 100 for better usability
+export const PAGE_SIZE_OPTIONS = [25, 50, 100, 250, 500, 1000] as const;
+
 function createDefaultPreferences(view: TableViewType): TableViewPreferences {
   const defaultFields = DEFAULT_COLUMN_SETS[view];
   return {
@@ -111,7 +114,7 @@ function createDefaultPreferences(view: TableViewType): TableViewPreferences {
       visible: true,
       order: index,
     })),
-    pageSize: 25,
+    pageSize: 100, // Increased default from 25 to 100
     savedFilters: [],
   };
 }

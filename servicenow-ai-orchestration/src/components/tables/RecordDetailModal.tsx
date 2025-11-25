@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getServiceNowAPI } from '../../services/servicenow';
 import { TABLE_VIEW_CONFIG, type TableViewType } from '../../types';
+import { getSysId, getRecordDisplayName } from '../../utils/serviceNowHelpers';
 
 interface RecordDetailModalProps {
   viewType: TableViewType;
@@ -38,12 +39,7 @@ export function RecordDetailModal({
   const [activeTab, setActiveTab] = useState<'details' | 'related'>('details');
 
   // Get display name for the record
-  const getDisplayName = () => {
-    if (record.name) return record.name;
-    if (record.number) return record.number;
-    if (record.display_name) return record.display_name;
-    return record.sys_id;
-  };
+  const displayName = getRecordDisplayName(record);
 
   // Format field value for display
   const formatValue = (key: string, value: unknown): ReactNode => {
@@ -172,7 +168,7 @@ export function RecordDetailModal({
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              {formatValue('name', getDisplayName())}
+              {displayName}
             </h2>
             <p className="text-sm text-gray-500">{config.label} Record</p>
           </div>
@@ -381,22 +377,26 @@ function RelatedRecordsSection({
             </div>
           ) : data && data.length > 0 ? (
             <div className="space-y-2">
-              {data.map((item: Record<string, unknown>, index: number) => (
-                <div
-                  key={item.sys_id as string || index}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-700">
-                      {(item.name || item.number || item.display_name || item.sys_id) as string}
+              {data.map((item: Record<string, unknown>, index: number) => {
+                const itemSysId = getSysId(item.sys_id);
+                const itemDisplayName = getRecordDisplayName(item);
+                return (
+                  <div
+                    key={itemSysId || index}
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-700">
+                        {itemDisplayName}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {itemSysId}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {item.sys_id as string}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-gray-500 text-sm py-4">

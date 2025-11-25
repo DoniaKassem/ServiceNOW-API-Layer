@@ -63,7 +63,7 @@ const FIELD_CONFIGS: Record<TableViewType, {
     { field: 'short_description', label: 'Description', type: 'textarea' },
   ],
   contracts: [
-    { field: 'short_description', label: 'Description', type: 'text', required: true },
+    { field: 'short_description', label: 'Short Description', type: 'text', required: true },
     { field: 'vendor', label: 'Vendor', type: 'reference', referenceTable: 'core_company', required: true },
     { field: 'supplier', label: 'Supplier', type: 'reference', referenceTable: 'sn_fin_supplier' },
     { field: 'vendor_contract', label: 'Vendor Contract Number', type: 'text' },
@@ -86,7 +86,9 @@ const FIELD_CONFIGS: Record<TableViewType, {
       { value: 'expired', label: 'Expired' },
       { value: 'cancelled', label: 'Cancelled' },
     ]},
-    { field: 'description', label: 'Full Description', type: 'textarea' },
+    { field: 'description', label: 'Detailed Description', type: 'textarea' },
+    { field: 'terms_and_conditions', label: 'Terms and Conditions', type: 'textarea' },
+    { field: 'special_terms', label: 'Special Terms / Notes', type: 'textarea' },
   ],
   purchase_orders: [
     { field: 'display_name', label: 'Display Name', type: 'text', required: true },
