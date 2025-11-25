@@ -300,3 +300,184 @@ export const ENTITY_EXECUTION_ORDER: EntityType[] = [
   'currency_instance',
   'supplier_product',
 ];
+
+// ============ Request Log Types ============
+export interface RequestLogEntry {
+  id: string;
+  timestamp: Date;
+  method: RequestMethod;
+  url: string;
+  table?: string;
+  recordSysId?: string;
+  headers: Record<string, string>;
+  body?: Record<string, unknown>;
+  responseStatus?: number;
+  responseBody?: unknown;
+  duration?: number;
+  error?: string;
+  sessionId?: string;
+}
+
+// ============ Table View Types ============
+export type TableViewType = 'contracts' | 'purchase_orders' | 'suppliers' | 'vendors';
+
+export const TABLE_VIEW_CONFIG: Record<TableViewType, {
+  table: string;
+  entityType: EntityType;
+  label: string;
+  defaultQuery?: string;
+}> = {
+  contracts: {
+    table: 'ast_contract',
+    entityType: 'contract',
+    label: 'Contracts',
+  },
+  purchase_orders: {
+    table: 'sn_shop_purchase_order',
+    entityType: 'purchase_order',
+    label: 'Purchase Orders',
+  },
+  suppliers: {
+    table: 'sn_fin_supplier',
+    entityType: 'supplier',
+    label: 'Suppliers',
+  },
+  vendors: {
+    table: 'core_company',
+    entityType: 'vendor',
+    label: 'Vendors',
+    defaultQuery: 'vendor=true',
+  },
+};
+
+export const DEFAULT_COLUMNS: Record<TableViewType, string[]> = {
+  contracts: [
+    'number',
+    'short_description',
+    'vendor',
+    'supplier',
+    'starts',
+    'ends',
+    'state',
+    'payment_amount',
+    'payment_schedule',
+    'total_cost',
+  ],
+  purchase_orders: [
+    'display_name',
+    'status',
+    'supplier',
+    'total_amount',
+    'purchase_order_type',
+    'created',
+  ],
+  suppliers: [
+    'name',
+    'legal_name',
+    'u_vendor',
+    'web_site',
+    'city',
+    'state',
+    'country',
+  ],
+  vendors: [
+    'name',
+    'status',
+    'vendor_type',
+    'vendor_manager',
+    'website',
+    'city',
+    'state',
+    'country',
+  ],
+};
+
+export interface ColumnConfig {
+  field: string;
+  label: string;
+  visible: boolean;
+  order: number;
+  type?: 'text' | 'reference' | 'date' | 'number' | 'boolean' | 'currency';
+}
+
+export interface TableViewState {
+  viewType: TableViewType;
+  columns: ColumnConfig[];
+  sortField?: string;
+  sortDirection?: 'asc' | 'desc';
+  page: number;
+  pageSize: number;
+  searchQuery?: string;
+  filters: FilterCondition[];
+}
+
+export interface FilterCondition {
+  id: string;
+  field: string;
+  operator: FilterOperator;
+  value: string;
+  connector?: 'AND' | 'OR';
+}
+
+export type FilterOperator =
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'starts_with'
+  | 'greater_than'
+  | 'less_than'
+  | 'between'
+  | 'is_empty'
+  | 'is_not_empty';
+
+// ============ Workflow Automation Types ============
+export type ApprovalLevel = 'manual' | 'validated' | 'automated';
+
+export interface WorkflowConfig {
+  id: string;
+  name: string;
+  description: string;
+  method: RequestMethod;
+  table: string;
+  approvalLevel: ApprovalLevel;
+  lastExecuted?: Date;
+  successCount: number;
+  failureCount: number;
+}
+
+// ============ Duplicate Detection Types ============
+export interface DuplicateMatch {
+  sysId: string;
+  displayValue: string;
+  matchType: 'exact' | 'partial';
+  matchedFields: string[];
+  record: Record<string, unknown>;
+}
+
+export interface DuplicateCheckResult {
+  hasDuplicates: boolean;
+  matches: DuplicateMatch[];
+  checkedFields: string[];
+}
+
+// ============ Expense Line Classification Types ============
+export type ClassificationType = 'none' | 'configuration_item' | 'offering' | 'asset';
+
+export interface ExpenseLineClassification {
+  expenseLineId: string;
+  classificationType: ClassificationType;
+  linkedSysId?: string;
+  linkedDisplayValue?: string;
+}
+
+// ============ Bulk Operation Types ============
+export interface BulkOperationResult {
+  totalRecords: number;
+  successCount: number;
+  failureCount: number;
+  results: {
+    sysId: string;
+    success: boolean;
+    error?: string;
+  }[];
+}

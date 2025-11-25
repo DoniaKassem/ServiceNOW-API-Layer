@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Settings,
   Server,
@@ -9,6 +10,8 @@ import {
   Eye,
   EyeOff,
   Save,
+  Zap,
+  ChevronRight,
 } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { initServiceNowAPI, resetServiceNowAPI } from '../../services/servicenow';
@@ -355,6 +358,30 @@ export function SettingsPanel() {
                 </label>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Workflow Automation */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Zap className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Workflow Automation</h2>
+                <p className="text-sm text-gray-500">
+                  Configure approval levels for API operations
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/settings/workflows"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg"
+            >
+              Configure
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </div>
