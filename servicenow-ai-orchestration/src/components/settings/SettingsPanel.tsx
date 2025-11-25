@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Settings,
   Server,
@@ -9,14 +10,18 @@ import {
   Eye,
   EyeOff,
   Save,
+  Zap,
+  ChevronRight,
+  RefreshCw,
 } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { initServiceNowAPI, resetServiceNowAPI } from '../../services/servicenow';
 import { initOpenAIService } from '../../services/openai';
+import { ConnectionHealthCheck } from './ConnectionHealthCheck';
 import { clsx } from 'clsx';
 
 export function SettingsPanel() {
-  const { settings, updateServiceNowSettings, updateOpenAISettings, updateDefaultSettings, setConnectionStatus } =
+  const { settings, updateServiceNowSettings, updateOpenAISettings, updateDefaultSettings, updatePollingSettings, setConnectionStatus } =
     useSettingsStore();
 
   const [showSnApiKey, setShowSnApiKey] = useState(false);
@@ -177,6 +182,15 @@ export function SettingsPanel() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Connection Health Check */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <RefreshCw className="w-5 h-5 text-purple-600" />
+            <h2 className="text-lg font-semibold text-gray-900">Connection Health</h2>
+          </div>
+          <ConnectionHealthCheck />
         </div>
 
         {/* OpenAI Configuration */}
@@ -355,6 +369,116 @@ export function SettingsPanel() {
                 </label>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Real-time Updates */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <RefreshCw className="w-5 h-5 text-cyan-600" />
+            <h2 className="text-lg font-semibold text-gray-900">Real-time Updates</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Enable Auto-refresh
+                </label>
+                <p className="text-xs text-gray-500">
+                  Automatically refresh table data at regular intervals
+                </p>
+              </div>
+              <button
+                onClick={() => updatePollingSettings({ enabled: !settings.polling?.enabled })}
+                className={clsx(
+                  'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                  settings.polling?.enabled ? 'bg-cyan-600' : 'bg-gray-200'
+                )}
+              >
+                <span
+                  className={clsx(
+                    'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                    settings.polling?.enabled ? 'translate-x-6' : 'translate-x-1'
+                  )}
+                />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Refresh Interval (seconds)
+                </label>
+                <select
+                  value={settings.polling?.interval || 30}
+                  onChange={(e) => updatePollingSettings({ interval: parseInt(e.target.value) })}
+                  disabled={!settings.polling?.enabled}
+                  className={clsx(
+                    'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500',
+                    !settings.polling?.enabled && 'bg-gray-100 text-gray-400'
+                  )}
+                >
+                  <option value={15}>15 seconds</option>
+                  <option value={30}>30 seconds</option>
+                  <option value={60}>1 minute</option>
+                  <option value={120}>2 minutes</option>
+                  <option value={300}>5 minutes</option>
+                </select>
+              </div>
+
+              <div className="flex items-center">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.polling?.showLastRefreshed ?? true}
+                    onChange={(e) =>
+                      updatePollingSettings({ showLastRefreshed: e.target.checked })
+                    }
+                    disabled={!settings.polling?.enabled}
+                    className="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500 disabled:opacity-50"
+                  />
+                  <span className={clsx(
+                    'text-sm font-medium',
+                    settings.polling?.enabled ? 'text-gray-700' : 'text-gray-400'
+                  )}>
+                    Show last refreshed timestamp
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {settings.polling?.enabled && (
+              <div className="mt-2 p-3 bg-cyan-50 border border-cyan-200 rounded-lg">
+                <p className="text-sm text-cyan-700">
+                  <strong>Active:</strong> Table views will automatically refresh every {settings.polling.interval} seconds when the tab is focused.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Workflow Automation */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Zap className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Workflow Automation</h2>
+                <p className="text-sm text-gray-500">
+                  Configure approval levels for API operations
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/settings/workflows"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg"
+            >
+              Configure
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ interface SettingsState {
   updateServiceNowSettings: (settings: Partial<AppSettings['servicenow']>) => void;
   updateOpenAISettings: (settings: Partial<AppSettings['openai']>) => void;
   updateDefaultSettings: (settings: Partial<AppSettings['defaults']>) => void;
+  updatePollingSettings: (settings: Partial<AppSettings['polling']>) => void;
   setConnectionStatus: (isConnected: boolean) => void;
   resetSettings: () => void;
 }
@@ -29,6 +30,11 @@ const defaultSettings: AppSettings = {
     approver: 'Ahmed Donia',
     currency: 'USD',
     autoSaveDrafts: true,
+  },
+  polling: {
+    enabled: false,
+    interval: 30, // 30 seconds default
+    showLastRefreshed: true,
   },
 };
 
@@ -58,6 +64,14 @@ export const useSettingsStore = create<SettingsState>()(
           settings: {
             ...state.settings,
             defaults: { ...state.settings.defaults, ...newSettings },
+          },
+        })),
+
+      updatePollingSettings: (newSettings) =>
+        set((state) => ({
+          settings: {
+            ...state.settings,
+            polling: { ...state.settings.polling, ...newSettings },
           },
         })),
 
