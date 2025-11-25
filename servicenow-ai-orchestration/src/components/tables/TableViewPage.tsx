@@ -13,12 +13,14 @@ import { ConflictResolutionModal } from './ConflictResolutionModal';
 import { BatchOperationModal, type BatchOperationType } from './BatchOperationModal';
 import { RequestPreviewModal } from '../request-log/RequestPreviewModal';
 import { useConflictDetection } from '../../hooks/useConflictDetection';
+import { useToast } from '../ui';
 import { useTableViewStore } from '../../stores/tableViewStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
 import { useWorkflowStore } from '../../stores/workflowStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { ServiceNowAPI, getServiceNowAPI, initServiceNowAPI } from '../../services/servicenow';
 import { TABLE_VIEW_CONFIG, type TableViewType } from '../../types';
+import { exportToExcel } from '../../utils/excelExport';
 
 interface TableViewPageProps {
   viewType: TableViewType;
@@ -26,6 +28,7 @@ interface TableViewPageProps {
 
 export function TableViewPage({ viewType }: TableViewPageProps) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const { settings } = useSettingsStore();
   const { addEntry, updateEntry } = useRequestLogStore();
   const { shouldAutoExecute, recordExecution, getWorkflow } = useWorkflowStore();
@@ -267,6 +270,9 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
         );
       }
     },
+    onSuccess: () => {
+      toast.success('Record Updated', 'The record has been successfully updated.');
+    },
     onSettled: () => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['table', viewType] });
@@ -362,6 +368,12 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
           context.previousData
         );
       }
+    },
+    onSuccess: (_data, variables) => {
+      toast.success(
+        'Records Deleted',
+        `${variables.length} record${variables.length !== 1 ? 's' : ''} deleted successfully.`
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['table', viewType] });
@@ -478,11 +490,23 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
       a.click();
       URL.revokeObjectURL(url);
     } else if (format === 'xlsx') {
-      // For xlsx, we'd need a library like xlsx.js
-      // For now, fall back to CSV
-      handleExport('csv');
+      try {
+        const visibleColumns = getVisibleColumns(viewType);
+        await exportToExcel({
+          filename: `${viewType}-export`,
+          sheetName: config.label,
+          columns: visibleColumns.map((col) => ({
+            field: col.field,
+            label: col.label,
+          })),
+          data: records,
+        });
+        toast.success('Export Complete', `${records.length} records exported to Excel.`);
+      } catch (err) {
+        toast.error('Export Failed', (err as Error).message);
+      }
     }
-  }, [data, viewType, getVisibleColumns, getApi]);
+  }, [data, viewType, getVisibleColumns, getApi, config.label, toast]);
 
   // Handle conflict resolution
   const handleConflictResolve = useCallback(

@@ -17,6 +17,7 @@ import {
 import { useSettingsStore } from '../../stores/settingsStore';
 import { initServiceNowAPI, resetServiceNowAPI } from '../../services/servicenow';
 import { initOpenAIService } from '../../services/openai';
+import { ConnectionHealthCheck } from './ConnectionHealthCheck';
 import { clsx } from 'clsx';
 
 export function SettingsPanel() {
@@ -181,6 +182,15 @@ export function SettingsPanel() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Connection Health Check */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <RefreshCw className="w-5 h-5 text-purple-600" />
+            <h2 className="text-lg font-semibold text-gray-900">Connection Health</h2>
+          </div>
+          <ConnectionHealthCheck />
         </div>
 
         {/* OpenAI Configuration */}

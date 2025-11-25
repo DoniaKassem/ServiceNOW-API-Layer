@@ -12,6 +12,7 @@ import { SessionHistory } from './components/SessionHistory';
 import { TableViewPage } from './components/tables/TableViewPage';
 import { WorkflowAutomation } from './components/settings/WorkflowAutomation';
 import { RequestLogPanel } from './components/request-log/RequestLogPanel';
+import { ToastProvider } from './components/ui';
 import { useSessionStore } from './stores/sessionStore';
 import { useRequestLogStore } from './stores/requestLogStore';
 
@@ -65,11 +66,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            {/* Dashboard */}
-            <Route path="/" element={<Dashboard />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              {/* Dashboard */}
+              <Route path="/" element={<Dashboard />} />
 
             {/* Analytics Dashboard */}
             <Route path="/analytics" element={<AnalyticsDashboard />} />
@@ -102,6 +104,7 @@ function App() {
           />
         </Layout>
       </BrowserRouter>
+      </ToastProvider>
     </QueryClientProvider>
   );
 }

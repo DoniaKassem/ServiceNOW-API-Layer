@@ -8,6 +8,7 @@ export { CloneRecordModal } from './CloneRecordModal';
 export { CSVImportModal } from './CSVImportModal';
 export { ConflictResolutionModal } from './ConflictResolutionModal';
 export { BatchOperationModal, type BatchOperationType } from './BatchOperationModal';
+export { TemplateManagerModal, TemplateSelector } from './TemplateManager';
 export { DuplicateWarningModal, checkForDuplicates } from './DuplicateWarningModal';
 export { VendorSupplierLinking, LinkedStatusBadge } from './VendorSupplierLinking';
 export { ExpenseLineClassification } from './ExpenseLineClassification';
