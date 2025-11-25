@@ -3,6 +3,7 @@ import {
   X,
   Edit3,
   Trash2,
+  Copy,
   ExternalLink,
   Link2,
   FileText,
@@ -22,6 +23,7 @@ interface RecordDetailModalProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onClone: () => void;
 }
 
 export function RecordDetailModal({
@@ -30,6 +32,7 @@ export function RecordDetailModal({
   onClose,
   onEdit,
   onDelete,
+  onClone,
 }: RecordDetailModalProps) {
   const config = TABLE_VIEW_CONFIG[viewType];
   const [activeTab, setActiveTab] = useState<'details' | 'related'>('details');
@@ -180,6 +183,13 @@ export function RecordDetailModal({
             >
               <Edit3 className="w-4 h-4" />
               Edit
+            </button>
+            <button
+              onClick={onClone}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg"
+            >
+              <Copy className="w-4 h-4" />
+              Clone
             </button>
             <button
               onClick={onDelete}

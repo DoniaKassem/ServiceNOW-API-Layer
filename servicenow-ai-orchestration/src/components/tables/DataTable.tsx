@@ -8,6 +8,7 @@ import {
   Search,
   Filter,
   Download,
+  Upload,
   Plus,
   Trash2,
   Edit3,
@@ -37,6 +38,7 @@ interface DataTableProps {
   onBulkEdit?: (sysIds: string[]) => void;
   onSaveChanges?: (changes: Map<string, Record<string, unknown>>) => Promise<void>;
   onExport?: (format: 'csv' | 'xlsx' | 'json') => void;
+  onImport?: () => void;
 }
 
 export function DataTable({
@@ -52,6 +54,7 @@ export function DataTable({
   onBulkEdit,
   onSaveChanges,
   onExport,
+  onImport,
 }: DataTableProps) {
   const {
     preferences,
@@ -352,6 +355,17 @@ export function DataTable({
           >
             <RefreshCw className={clsx('w-4 h-4', isLoading && 'animate-spin')} />
           </button>
+
+          {/* Import */}
+          {onImport && (
+            <button
+              onClick={onImport}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg"
+            >
+              <Upload className="w-4 h-4" />
+              Import
+            </button>
+          )}
 
           {/* Create New */}
           {onCreateNew && (

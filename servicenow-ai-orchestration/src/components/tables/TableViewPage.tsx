@@ -7,7 +7,12 @@ import { RecordDetailModal } from './RecordDetailModal';
 import { RecordFormModal } from './RecordFormModal';
 import { BulkEditModal } from './BulkEditModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { CloneRecordModal } from './CloneRecordModal';
+import { CSVImportModal } from './CSVImportModal';
+import { ConflictResolutionModal } from './ConflictResolutionModal';
+import { BatchOperationModal, type BatchOperationType } from './BatchOperationModal';
 import { RequestPreviewModal } from '../request-log/RequestPreviewModal';
+import { useConflictDetection } from '../../hooks/useConflictDetection';
 import { useTableViewStore } from '../../stores/tableViewStore';
 import { useRequestLogStore } from '../../stores/requestLogStore';
 import { useWorkflowStore } from '../../stores/workflowStore';
@@ -45,7 +50,21 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBulkEditModal, setShowBulkEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCloneModal, setShowCloneModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showConflictModal, setShowConflictModal] = useState(false);
+  const [showBatchModal, setShowBatchModal] = useState(false);
+  const [batchOperation, setBatchOperation] = useState<{
+    type: BatchOperationType;
+    records: Record<string, unknown>[];
+    updateData?: Record<string, unknown>;
+  } | null>(null);
   const [showRequestPreview, setShowRequestPreview] = useState(false);
+  const [pendingUpdate, setPendingUpdate] = useState<{
+    sysId: string;
+    data: Record<string, unknown>;
+    originalRecord: Record<string, unknown>;
+  } | null>(null);
   const [bulkEditIds, setBulkEditIds] = useState<string[]>([]);
   const [deleteIds, setDeleteIds] = useState<string[]>([]);
   const [pendingRequest, setPendingRequest] = useState<{
@@ -58,6 +77,9 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
 
   const config = TABLE_VIEW_CONFIG[viewType];
   const pageSize = preferences[viewType].pageSize;
+
+  // Conflict detection
+  const { conflictState, checkForConflict, setConflict, clearConflict } = useConflictDetection();
 
   // Set current view on mount
   useEffect(() => {
@@ -159,11 +181,28 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     refetchIntervalInBackground: false, // Only poll when tab is focused
   });
 
-  // Update mutation
+  // Update mutation with optimistic updates and conflict detection
   const updateMutation = useMutation({
-    mutationFn: async ({ sysId, data }: { sysId: string; data: Record<string, unknown> }) => {
+    mutationFn: async ({ sysId, data, originalRecord, skipConflictCheck }: {
+      sysId: string;
+      data: Record<string, unknown>;
+      originalRecord?: Record<string, unknown>;
+      skipConflictCheck?: boolean;
+    }) => {
       const api = getApi();
       if (!api) throw new Error('API not configured');
+
+      // Check for conflicts if we have an original record with sys_mod_count
+      if (!skipConflictCheck && originalRecord?.sys_mod_count) {
+        const conflictResult = await checkForConflict(api, config.table, sysId, originalRecord);
+        if (conflictResult.hasConflict && conflictResult.serverData) {
+          // Store the pending update and show conflict modal
+          setPendingUpdate({ sysId, data, originalRecord });
+          setConflict(data, conflictResult.serverData);
+          setShowConflictModal(true);
+          throw new Error('CONFLICT_DETECTED');
+        }
+      }
 
       const url = `${settings.servicenow.instanceUrl}/api/now/table/${config.table}/${sysId}`;
       const headers = {
@@ -194,7 +233,42 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
 
       return executeUpdate(api, sysId, data);
     },
-    onSuccess: () => {
+    // Optimistic update
+    onMutate: async ({ sysId, data: newData }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['table', viewType] });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        ['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection],
+        (old: { records: Record<string, unknown>[]; totalCount: number } | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            records: old.records.map((record) =>
+              record.sys_id === sysId ? { ...record, ...newData } : record
+            ),
+          };
+        }
+      );
+
+      // Return context with the previous value
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection],
+          context.previousData
+        );
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['table', viewType] });
     },
   });
@@ -246,7 +320,7 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     }
   };
 
-  // Delete mutation
+  // Delete mutation with optimistic updates
   const deleteMutation = useMutation({
     mutationFn: async (sysIds: string[]) => {
       const api = getApi();
@@ -257,7 +331,39 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
         await executeDelete(api, sysId);
       }
     },
-    onSuccess: () => {
+    // Optimistic delete
+    onMutate: async (sysIds) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['table', viewType] });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection]);
+
+      // Optimistically remove records from cache
+      queryClient.setQueryData(
+        ['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection],
+        (old: { records: Record<string, unknown>[]; totalCount: number } | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            records: old.records.filter((record) => !sysIds.includes(record.sys_id as string)),
+            totalCount: old.totalCount - sysIds.length,
+          };
+        }
+      );
+
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ['table', viewType, currentPage, searchQuery, activeFilters, sortField, sortDirection],
+          context.previousData
+        );
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['table', viewType] });
       clearSelection();
     },
@@ -330,6 +436,11 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     setShowBulkEditModal(true);
   }, []);
 
+  // Handle import
+  const handleImport = useCallback(() => {
+    setShowImportModal(true);
+  }, []);
+
   // Handle export
   const handleExport = useCallback(async (format: 'csv' | 'xlsx' | 'json') => {
     const api = getApi();
@@ -373,12 +484,62 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
     }
   }, [data, viewType, getVisibleColumns, getApi]);
 
-  // Confirm delete
+  // Handle conflict resolution
+  const handleConflictResolve = useCallback(
+    async (resolution: 'local' | 'server' | 'merge', mergedData?: Record<string, unknown>) => {
+      if (!pendingUpdate) return;
+
+      setShowConflictModal(false);
+      clearConflict();
+
+      if (resolution === 'server') {
+        // Discard local changes, just refetch
+        refetch();
+      } else {
+        // Apply local or merged changes, skip conflict check this time
+        const dataToApply = resolution === 'merge' && mergedData ? mergedData : pendingUpdate.data;
+        await updateMutation.mutateAsync({
+          sysId: pendingUpdate.sysId,
+          data: dataToApply,
+          skipConflictCheck: true,
+        });
+      }
+
+      setPendingUpdate(null);
+    },
+    [pendingUpdate, clearConflict, refetch, updateMutation]
+  );
+
+  // Confirm delete - use batch modal for multiple records
   const handleConfirmDelete = useCallback(async () => {
-    await deleteMutation.mutateAsync(deleteIds);
-    setShowDeleteModal(false);
+    if (deleteIds.length > 3) {
+      // For many records, use batch operation with progress tracking
+      const recordsToDelete = data?.records.filter((r) =>
+        deleteIds.includes(r.sys_id as string)
+      ) || [];
+
+      setBatchOperation({
+        type: 'delete',
+        records: recordsToDelete,
+      });
+      setShowDeleteModal(false);
+      setShowBatchModal(true);
+    } else {
+      // For few records, use quick delete
+      await deleteMutation.mutateAsync(deleteIds);
+      setShowDeleteModal(false);
+      setDeleteIds([]);
+    }
+  }, [deleteMutation, deleteIds, data?.records]);
+
+  // Handle batch operation complete
+  const handleBatchComplete = useCallback(() => {
+    setShowBatchModal(false);
+    setBatchOperation(null);
     setDeleteIds([]);
-  }, [deleteMutation, deleteIds]);
+    clearSelection();
+    refetch();
+  }, [clearSelection, refetch]);
 
   return (
     <div className="h-full flex flex-col bg-gray-50">
@@ -431,6 +592,7 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
           onBulkEdit={handleBulkEdit}
           onSaveChanges={handleSaveChanges}
           onExport={handleExport}
+          onImport={handleImport}
         />
       </div>
 
@@ -451,6 +613,10 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
             setShowDetailModal(false);
             setDeleteIds([selectedRecord.sys_id as string]);
             setShowDeleteModal(true);
+          }}
+          onClone={() => {
+            setShowDetailModal(false);
+            setShowCloneModal(true);
           }}
         />
       )}
@@ -501,6 +667,66 @@ export function TableViewPage({ viewType }: TableViewPageProps) {
             clearSelection();
             refetch();
           }}
+        />
+      )}
+
+      {/* Clone Modal */}
+      {showCloneModal && selectedRecord && (
+        <CloneRecordModal
+          viewType={viewType}
+          record={selectedRecord}
+          onClose={() => {
+            setShowCloneModal(false);
+            setSelectedRecord(null);
+          }}
+          onSuccess={(newRecord) => {
+            setShowCloneModal(false);
+            setSelectedRecord(newRecord);
+            setShowDetailModal(true);
+            refetch();
+          }}
+        />
+      )}
+
+      {/* CSV Import Modal */}
+      {showImportModal && (
+        <CSVImportModal
+          viewType={viewType}
+          onClose={() => setShowImportModal(false)}
+          onSuccess={() => {
+            setShowImportModal(false);
+            refetch();
+          }}
+        />
+      )}
+
+      {/* Conflict Resolution Modal */}
+      {showConflictModal && conflictState.localData && conflictState.serverData && (
+        <ConflictResolutionModal
+          viewType={viewType}
+          localData={conflictState.localData}
+          serverData={conflictState.serverData}
+          onResolve={handleConflictResolve}
+          onCancel={() => {
+            setShowConflictModal(false);
+            clearConflict();
+            setPendingUpdate(null);
+          }}
+        />
+      )}
+
+      {/* Batch Operation Modal */}
+      {showBatchModal && batchOperation && (
+        <BatchOperationModal
+          viewType={viewType}
+          operation={batchOperation.type}
+          records={batchOperation.records}
+          updateData={batchOperation.updateData}
+          onClose={() => {
+            setShowBatchModal(false);
+            setBatchOperation(null);
+          }}
+          onComplete={handleBatchComplete}
         />
       )}
 
