@@ -1,0 +1,53 @@
+# Docker Compose configuration for local development
+version: '3.9'
+
+services:
+  # Development server with hot-reload
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: servicenow-ai-orchestration-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount source code for hot-reloading
+      - ./src:/app/src:delegated
+      - ./public:/app/public:delegated
+      - ./index.html:/app/index.html:delegated
+      - ./vite.config.ts:/app/vite.config.ts:delegated
+      - ./tsconfig.json:/app/tsconfig.json:delegated
+      - ./tsconfig.app.json:/app/tsconfig.app.json:delegated
+      - ./tsconfig.node.json:/app/tsconfig.node.json:delegated
+      - ./eslint.config.js:/app/eslint.config.js:delegated
+      # Use named volumes for node_modules to avoid conflicts
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_SERVICENOW_INSTANCE=${VITE_SERVICENOW_INSTANCE:-https://illumindev.service-now.com}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:5173}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - servicenow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.servicenow.app=ai-orchestration"
+      - "com.servicenow.environment=development"
+
+volumes:
+  # Named volume for node_modules to persist between rebuilds
+  node_modules:
+    driver: local
+
+networks:
+  servicenow-network:
+    driver: bridge
+    name: servicenow-network
